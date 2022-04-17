@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "stegoLearning (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "stegoLearning (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

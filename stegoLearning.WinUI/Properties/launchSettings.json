@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "stegoLearning.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "stegoLearning.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
