@@ -35,10 +35,7 @@ namespace stegoLearning.WinUI
         private void StegFromWritableBitmap(byte[] bytesMensagem, short numeroBits)
         {
             WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
-            //byte[][] pixeis = Esteganografia.ConverterImagem_EmPixeis(writableBitmap, 0, writableBitmap.PixelWidth * writableBitmap.PixelHeight);
-            //byte[] dadosImagem = Esteganografia.ConverterPixeis_EmDadosImagem(pixeis);
-            //imgStego.Source = Esteganografia.ConverterDadosImagem_EmImagem(dadosImagem, writableBitmap.PixelWidth, writableBitmap.PixelHeight);
-            imgStego.Source = Esteganografia.GravarMensagem_EmImagem(bytesMensagem, numeroBits, writableBitmap);
+            imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
             //imgStego.Source = Esteganografia.AdicionarMensagem(bytesMensagem, numeroBits, writableBitmap);
         }
 
