@@ -5,17 +5,17 @@ namespace stegoLearning.WinUI
     public static class SequenciaBinaria
     {
         /// <summary>
-        /// Converte byte em sequência binária
+        /// Converte byte em sequência binária.
         /// </summary>
         /// <param name="valorByte"></param>
         /// <returns></returns>
         public static BitArray BytesParaSequenciaBinaria(byte valorByte)
         {
-            return new BitArray(valorByte);
+            return new BitArray(new byte[] { valorByte });
         }
 
         /// <summary>
-        /// Converte bytes em sequência binária
+        /// Converte bytes em sequência binária.
         /// </summary>
         /// <param name="valorByte"></param>
         /// <returns></returns>
@@ -25,7 +25,7 @@ namespace stegoLearning.WinUI
         }
 
         /// <summary>
-        /// Converte uma sequência binária em byte
+        /// Converte uma sequência binária em byte.
         /// </summary>
         /// <param name="sequenciaBinaria"></param>
         /// <returns></returns>
@@ -37,7 +37,7 @@ namespace stegoLearning.WinUI
         }
 
         /// <summary>
-        /// Converte uma sequência binária em bytes
+        /// Converte uma sequência binária em bytes.
         /// </summary>
         /// <param name="sequenciaBinaria"></param>
         /// <param name="tamanho"></param>
