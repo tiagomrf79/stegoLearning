@@ -25,9 +25,20 @@ namespace stegoLearning.WinUI
 
         private void btnSteg_Click(object sender, RoutedEventArgs e)
         {
-            string mensagem = "Isto é um teste!";
+            string mensagem = txtMensagemEmissor.Text;
             byte[] bytesMensagem = Encoding.UTF8.GetBytes(mensagem);
-            short numeroBits = 2; //permite 1,2,4 e 8
+
+            short numeroBits;
+            if (!short.TryParse(txtBitsEmissor.Text, out numeroBits))
+            {
+                numeroBits = 1;
+            }
+
+            string password = txtPasswordEmissor.Text;
+            if (password.Length > 0)
+            {
+                bytesMensagem = CifraSimetrica.EncriptarMensagem(mensagem, password);
+            }
 
             StegFromWritableBitmap(bytesMensagem, numeroBits);
         }
@@ -36,7 +47,6 @@ namespace stegoLearning.WinUI
         {
             WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
             imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
-            //imgStego.Source = Esteganografia.AdicionarMensagem(bytesMensagem, numeroBits, writableBitmap);
         }
 
         private async void btnOpenImage_Click(object sender, RoutedEventArgs e)
@@ -48,6 +58,7 @@ namespace stegoLearning.WinUI
             picker.FileTypeFilter.Add(".jpeg");
             picker.FileTypeFilter.Add(".jpg");
             picker.FileTypeFilter.Add(".bmp");
+            picker.FileTypeFilter.Add(".ico");
 
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
@@ -91,9 +102,28 @@ namespace stegoLearning.WinUI
 
         private async void btnSaveImage_Click(object sender, RoutedEventArgs e)
         {
+            string formatoImagem = "bmp";
+            Guid formatoImagemId;
+
+            if (formatoImagem == "png")
+            {
+                formatoImagemId = BitmapEncoder.PngEncoderId;
+            }
+            else
+            {
+                formatoImagemId = BitmapEncoder.BmpEncoderId;
+            }
+
             FileSavePicker fileSavePicker = new FileSavePicker();
             fileSavePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            fileSavePicker.FileTypeChoices.Add("Bitmap files", new List<string>() { ".bmp" });
+            if (formatoImagem == "png")
+            {
+                fileSavePicker.FileTypeChoices.Add("PNG files", new List<string>() { ".png" });
+            }
+            else
+            {
+                fileSavePicker.FileTypeChoices.Add("Bitmap files", new List<string>() { ".bmp" });
+            }
             fileSavePicker.SuggestedFileName = "stego";
 
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -115,8 +145,8 @@ namespace stegoLearning.WinUI
                 //gravar softwareBitmap no ficheiro escolhido
                 using (IRandomAccessStream stream = await outputFile.OpenAsync(FileAccessMode.ReadWrite))
                 {
-                    //converter imagem no formato bitmap
-                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, stream);
+                    //converter imagem no formato escolhido
+                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(formatoImagemId, stream);
 
                     encoder.SetSoftwareBitmap(softwareBitmap);
                     await encoder.FlushAsync();
@@ -130,8 +160,6 @@ namespace stegoLearning.WinUI
             picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
             picker.ViewMode = PickerViewMode.Thumbnail;
             picker.FileTypeFilter.Add(".png");
-            picker.FileTypeFilter.Add(".jpeg");
-            picker.FileTypeFilter.Add(".jpg");
             picker.FileTypeFilter.Add(".bmp");
 
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -143,13 +171,21 @@ namespace stegoLearning.WinUI
 
         private void btnUnsteg_Click(object sender, RoutedEventArgs e)
         {
-            UnstegFromWritableBitmap();
+            byte[] dados = UnstegFromWritableBitmap();
+
+            string password = txtPasswordRecetor.Text;
+            if (password.Length > 0)
+            {
+                dados = CifraSimetrica.DesencriptarDados(dados, password);
+            }
+
+            txtMensagemRecetor.Text = Encoding.UTF8.GetString(dados);
         }
 
-        private void UnstegFromWritableBitmap()
+        private byte[] UnstegFromWritableBitmap()
         {
             WriteableBitmap writableBitmap = (WriteableBitmap)imgFinal.Source;
-            byte[] dados = Esteganografia.DesteganografarImagem(writableBitmap);
+            return Esteganografia.DesteganografarImagem(writableBitmap);
         }
     }
 }

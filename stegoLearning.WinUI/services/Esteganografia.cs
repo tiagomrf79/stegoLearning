@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 
@@ -12,68 +11,6 @@ namespace stegoLearning.WinUI
         //constantes que determinam o n.º de bytes ocupados na imagem com o "numeroBits" e "tamanhoMensagem", respectivamente
         private const int BytesShort = 2;   //2 bytes ou 16 bits
         private const int BytesInt = 4;     //4 bytes ou 32 bits
-
-        /// <summary>
-        /// Obtém conteúdo esteganografado de uma imagem.
-        /// </summary>
-        /// <param name="imagemStego"></param>
-        /// <returns></returns>
-        public static byte[] DesteganografarImagem(WriteableBitmap imagemStego)
-        {
-            #region BLOCO INICIAL
-
-            int numBytesInicio = BytesShort + BytesInt;
-            int numBitsInicio = numBytesInicio * 8;
-
-            //obter os pixéis da imagem que necessitam de ser lidos para obter o n.º de bits por componente e o tamanho da mensagem
-            int numPixeisInicio = CalcularPixeisUtilizados(numBitsInicio, 1);
-            byte[] bytesImagemInicio = TratamentoImagem.ConverterImagemEmBytes(imagemStego, 0, numPixeisInicio);
-            byte[][] pixeisInicio = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemInicio);
-
-            //ler a sequência binária escrita nesses pixeis
-            BitArray bitsInicio = LerBitsComponentes(pixeisInicio, 1, numBitsInicio);
-
-            //converter a sequência binária nas variáveis que necessitamos para processar pixeis com a mensagem
-            byte[] dadosInicio = SequenciaBinaria.SequenciaBinariaParaBytes(bitsInicio, numBytesInicio);
-            short bitsAlteradosPorComponente;
-            int numBytesMensagem;
-            (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoInicial(dadosInicio);
-
-            #endregion
-
-            #region MENSAGEM
-
-            int numBitsMensagem = numBytesMensagem * 8;
-
-            //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem
-            int numPixeisMensagem = CalcularPixeisUtilizados(numBitsMensagem, bitsAlteradosPorComponente);
-            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemStego, (uint)numPixeisInicio, numPixeisMensagem);
-            byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
-
-            //ler a sequência binária escrita nesses pixeis
-            BitArray bitsMensagem = LerBitsComponentes(pixeisMensagem, bitsAlteradosPorComponente, numBitsMensagem);
-
-            //converter a sequência binária em bytes
-            byte[] dadosMensagem = SequenciaBinaria.SequenciaBinariaParaBytes(bitsMensagem, numBytesMensagem);
-
-            #endregion
-
-            //int numBytesInicio = BytesShort + BytesInt;
-            //int numBitsInicio = numBytesInicio * 8;
-            //int numPixeisInicio = CalcularPixeisUtilizados(numBitsInicio, 1);
-            //byte[] bytesInicio = LerDadosImagem(imagemStego, numBytesInicio, 0, 1, numPixeisInicio);
-
-            //short bitsAlteradosPorComponente;
-            //int numBytesMensagem;
-            //(bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoInicial(bytesInicio);
-            //int numBitsMensagem = numBytesMensagem * 8;
-
-            //int numPixeisMensagem = CalcularPixeisUtilizados(numBitsMensagem, bitsAlteradosPorComponente);
-            //byte[] bytesMensagem = LerDadosImagem(imagemStego, numBytesMensagem, (uint)numPixeisInicio, bitsAlteradosPorComponente, numPixeisMensagem);
-
-            //return null;
-            return dadosMensagem;
-        }
 
         /// <summary>
         /// Cria uma imagem com conteúdo esteganografado
@@ -153,6 +90,54 @@ namespace stegoLearning.WinUI
         }
 
         /// <summary>
+        /// Obtém conteúdo esteganografado de uma imagem.
+        /// </summary>
+        /// <param name="imagemStego"></param>
+        /// <returns></returns>
+        public static byte[] DesteganografarImagem(WriteableBitmap imagemStego)
+        {
+            #region BLOCO INICIAL
+
+            int numBytesInicio = BytesShort + BytesInt;
+            int numBitsInicio = numBytesInicio * 8;
+
+            //obter os pixéis da imagem que necessitam de ser lidos para obter o n.º de bits por componente e o tamanho da mensagem
+            int numPixeisInicio = CalcularPixeisUtilizados(numBitsInicio, 1);
+            byte[] bytesImagemInicio = TratamentoImagem.ConverterImagemEmBytes(imagemStego, 0, numPixeisInicio);
+            byte[][] pixeisInicio = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemInicio);
+
+            //ler a sequência binária escrita nesses pixeis
+            BitArray bitsInicio = LerBitsComponentes(pixeisInicio, 1, numBitsInicio);
+
+            //converter a sequência binária nas variáveis que necessitamos para processar pixeis com a mensagem
+            byte[] dadosInicio = SequenciaBinaria.SequenciaBinariaParaBytes(bitsInicio, numBytesInicio);
+            short bitsAlteradosPorComponente;
+            int numBytesMensagem;
+            (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoInicial(dadosInicio);
+
+            #endregion
+
+            #region MENSAGEM
+
+            int numBitsMensagem = numBytesMensagem * 8;
+
+            //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem
+            int numPixeisMensagem = CalcularPixeisUtilizados(numBitsMensagem, bitsAlteradosPorComponente);
+            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemStego, (uint)numPixeisInicio, numPixeisMensagem);
+            byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
+
+            //ler a sequência binária escrita nesses pixeis
+            BitArray bitsMensagem = LerBitsComponentes(pixeisMensagem, bitsAlteradosPorComponente, numBitsMensagem);
+
+            //converter a sequência binária em bytes
+            byte[] dadosMensagem = SequenciaBinaria.SequenciaBinariaParaBytes(bitsMensagem, numBytesMensagem);
+
+            #endregion
+
+            return dadosMensagem;
+        }
+
+        /// <summary>
         /// Altera pixeis com bits de uma sequência binária
         /// </summary>
         /// <param name="pixeis"></param>
@@ -217,52 +202,13 @@ namespace stegoLearning.WinUI
 
                         //gravar esse valor na sequencia binária com os bits extraidos
                         bitArray.Set(bitsLidos, valorBit);
+                        bitsLidos++;
                     }
                 }
             }
 
             return bitArray;
         }
-
-
-
-        //private static byte[] LerDadosImagem(WriteableBitmap writeableBitmap, int tamanho, uint pixelInicial, int bitsPorComponente, int numPixeis)
-        //{
-        //    //criar sequência binária para guardar os bits extraídos da imagem
-        //    int totalBits = tamanho * 8;
-        //    BitArray bitArray = new BitArray(totalBits);
-
-        //    //converter zona da imagem em bytes e depois em pixeis
-        //    byte[] bytesImagem = TratamentoImagem.ConverterImagemEmBytes(writeableBitmap, pixelInicial, numPixeis);
-        //    byte[][] pixeis = TratamentoImagem.ConverterBytesEmPixeis(bytesImagem);
-
-        //    int bitsLidos = 0;
-
-        //    for (int i = 0; i < pixeis.Length; i++)
-        //    {
-        //        for (int j = 0; j < 3 && bitsLidos < totalBits; j++) //ignorar componente alpha
-        //        {
-        //            //converter componente atual (byte) numa sequencia de bits
-        //            BitArray bitsComponente = SequenciaBinaria.BytesParaSequenciaBinaria(pixeis[i][j]);
-
-        //            for (int k = 0; k < bitsPorComponente && bitsLidos < totalBits; k++) //k indica a posição do bit a alterar (começa no menos significativo)
-        //            {
-        //                //obter valor do bit no componente
-        //                bool valorBit = bitsComponente.Get(k);
-
-        //                //gravar esse valor na sequencia binária com os bits extraidos
-        //                bitArray.Set(bitsLidos, valorBit);
-        //                bitsLidos++;
-        //            }
-        //        }
-        //    }
-
-        //    byte[] byteArray = SequenciaBinaria.SequenciaBinariaParaBytes(bitArray, tamanho);
-
-        //    return byteArray;
-        //}
-
-
 
         /// <summary>
         /// Calcula quantos pixeis são utilizados para guardar um determinado n.º de bits.
