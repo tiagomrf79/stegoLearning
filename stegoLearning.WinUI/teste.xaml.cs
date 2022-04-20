@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
+using stegoLearning.WinUI.views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,8 +30,8 @@ namespace stegoLearning.WinUI
         // List of ValueTuple holding the Navigation Tag and the relative Navigation Page
         private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
         {
-            ("teg", typeof(MainWindow)),
-            ("unteg", typeof(ImageWindow))
+            ("steg", typeof(ViewSteg)),
+            ("unsteg", typeof(ViewUnsteg))
         };
 
         public teste()
