@@ -21,30 +21,11 @@ namespace stegoLearning.WinUI
         /// <returns></returns>
         public static WriteableBitmap EsteganografarImagem(WriteableBitmap imagemOriginal, byte[] dadosMensagem, short bitsPorComponente)
         {
-            int largura = imagemOriginal.PixelWidth;
-            int altura = imagemOriginal.PixelHeight;
             int tamanhoMensagem = dadosMensagem.Length;
 
-            #region BLOCO INICIAL
-
-            //construir um bloco com os bits alterados e o tamanho da mensagem, que irá ocupar 48 bits
-            byte[] dadosInicio = ComporBlocoInicial(bitsPorComponente, tamanhoMensagem);
-
-            //converter esse bloco em sequência binária
-            BitArray bitsInicio = SequenciaBinaria.BytesParaSequenciaBinaria(dadosInicio);
-
-            //obter pixéis da imagem que serão alterados com essa sequência binária
-            int numPixeisInicio = CalcularPixeisUtilizados(bitsInicio.Length, 1);
-            byte[] bytesImagemInicio = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, 0, numPixeisInicio);
-            byte[][] pixeisInicio = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemInicio);
-
-            //alterar esses pixeis com a sequência binária respetiva
-            pixeisInicio = AlterarBitsComponentes(pixeisInicio, bitsInicio, 1);
-
-            //obter bytes com as alterações feitas
-            bytesImagemInicio = TratamentoImagem.ConverterPixeisEmBytes(pixeisInicio);
-
-            #endregion
+            int largura = imagemOriginal.PixelWidth;
+            int altura = imagemOriginal.PixelHeight;
+            int numPixeisTotal = altura * largura;
 
             #region MENSAGEM
 
@@ -53,7 +34,7 @@ namespace stegoLearning.WinUI
 
             //obter pixéis da imagem que serão alterados com essa sequência binária
             int numPixeisMensagem = CalcularPixeisUtilizados(bitsMensagem.Length, bitsPorComponente);
-            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, (uint)numPixeisInicio, numPixeisMensagem);
+            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, 0, numPixeisMensagem);
             byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
 
             //alterar esses pixeis com a sequência binária respetiva
@@ -64,22 +45,42 @@ namespace stegoLearning.WinUI
 
             #endregion
 
+            #region BLOCO FINAL
+
+            //construir um bloco com os bits alterados e o tamanho da mensagem, que irá ocupar 48 bits
+            byte[] dadosFim = ComporBlocoFinal(bitsPorComponente, tamanhoMensagem);
+
+            //converter esse bloco em sequência binária
+            BitArray bitsFim = SequenciaBinaria.BytesParaSequenciaBinaria(dadosFim);
+
+            //obter pixéis da imagem que serão alterados com essa sequência binária
+            int numPixeisFim = CalcularPixeisUtilizados(bitsFim.Length, 1);
+            byte[] bytesImagemFim = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, (uint)(numPixeisTotal - numPixeisFim), numPixeisFim);
+            byte[][] pixeisFim = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemFim);
+
+            //alterar esses pixeis com a sequência binária respetiva
+            pixeisFim = AlterarBitsComponentes(pixeisFim, bitsFim, 1);
+
+            //obter bytes com as alterações feitas
+            bytesImagemFim = TratamentoImagem.ConverterPixeisEmBytes(pixeisFim);
+
+            #endregion
+
             #region CRIAR IMAGEM
 
             //obter bytes não alterados
-            int numPixeisTotal = altura * largura;
-            int numPixeisRestante = numPixeisTotal - numPixeisInicio - numPixeisMensagem;
-            byte[] bytesImagemRestante = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, (uint)(numPixeisInicio + numPixeisMensagem), numPixeisRestante);
+            int numPixeisRestante = numPixeisTotal - (numPixeisMensagem + numPixeisFim);
+            byte[] bytesImagemRestante = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, (uint)numPixeisMensagem, numPixeisRestante);
 
-            //juntar tudo no mesmo array (início + mensagem + restante)
-            int numBytesInicio = bytesImagemInicio.Length;
+            //juntar tudo no mesmo array (mensagem + restante + fim)
+            int numBytesFim = bytesImagemFim.Length;
             int numBytesMensagem = bytesImagemMensagem.Length;
             int numBytesTotal = numPixeisTotal * 4;
-            int numBytesRestante = numBytesTotal - numBytesInicio - numBytesMensagem;
+            int numBytesRestante = numBytesTotal - (numBytesMensagem + numBytesFim);
             byte[] bytesImagem = new byte[numBytesTotal];
-            Buffer.BlockCopy(bytesImagemInicio, 0, bytesImagem, 0, numBytesInicio);
-            Buffer.BlockCopy(bytesImagemMensagem, 0, bytesImagem, numBytesInicio, numBytesMensagem);
-            Buffer.BlockCopy(bytesImagemRestante, 0, bytesImagem, numBytesInicio + numBytesMensagem, numBytesRestante);
+            Buffer.BlockCopy(bytesImagemMensagem, 0, bytesImagem, 0, numBytesMensagem);
+            Buffer.BlockCopy(bytesImagemRestante, 0, bytesImagem, numBytesMensagem, numBytesRestante);
+            Buffer.BlockCopy(bytesImagemFim, 0, bytesImagem, numBytesMensagem + numBytesRestante, numBytesFim);
 
             //criar imagem a partir do array obtido
             WriteableBitmap imagemAlterada = TratamentoImagem.ConverterBytesEmImagem(bytesImagem, largura, altura);
@@ -96,24 +97,28 @@ namespace stegoLearning.WinUI
         /// <returns></returns>
         public static byte[] DesteganografarImagem(WriteableBitmap imagemStego)
         {
-            #region BLOCO INICIAL
+            int largura = imagemStego.PixelWidth;
+            int altura = imagemStego.PixelHeight;
+            int numPixeisTotal = altura * largura;
 
-            int numBytesInicio = BytesShort + BytesInt;
-            int numBitsInicio = numBytesInicio * 8;
+            #region BLOCO FINAL
+
+            int numBytesFim = BytesShort + BytesInt;
+            int numBitsFim = numBytesFim * 8;
 
             //obter os pixéis da imagem que necessitam de ser lidos para obter o n.º de bits por componente e o tamanho da mensagem
-            int numPixeisInicio = CalcularPixeisUtilizados(numBitsInicio, 1);
-            byte[] bytesImagemInicio = TratamentoImagem.ConverterImagemEmBytes(imagemStego, 0, numPixeisInicio);
-            byte[][] pixeisInicio = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemInicio);
+            int numPixeisFim = CalcularPixeisUtilizados(numBitsFim, 1);
+            byte[] bytesImagemFim = TratamentoImagem.ConverterImagemEmBytes(imagemStego, (uint)(numPixeisTotal - numPixeisFim), numPixeisFim);
+            byte[][] pixeisFim = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemFim);
 
             //ler a sequência binária escrita nesses pixeis
-            BitArray bitsInicio = LerBitsComponentes(pixeisInicio, 1, numBitsInicio);
+            BitArray bitsFim = LerBitsComponentes(pixeisFim, 1, numBitsFim);
 
             //converter a sequência binária nas variáveis que necessitamos para processar pixeis com a mensagem
-            byte[] dadosInicio = SequenciaBinaria.SequenciaBinariaParaBytes(bitsInicio, numBytesInicio);
+            byte[] dadosFim = SequenciaBinaria.SequenciaBinariaParaBytes(bitsFim, numBytesFim);
             short bitsAlteradosPorComponente;
             int numBytesMensagem;
-            (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoInicial(dadosInicio);
+            (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoFinal(dadosFim);
 
             #endregion
 
@@ -123,7 +128,7 @@ namespace stegoLearning.WinUI
 
             //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem
             int numPixeisMensagem = CalcularPixeisUtilizados(numBitsMensagem, bitsAlteradosPorComponente);
-            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemStego, (uint)numPixeisInicio, numPixeisMensagem);
+            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemStego, 0, numPixeisMensagem);
             byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
 
             //ler a sequência binária escrita nesses pixeis
@@ -230,7 +235,7 @@ namespace stegoLearning.WinUI
         /// <param name="bitsAlterados"></param>
         /// <param name="tamanhoMensagem"></param>
         /// <returns></returns>
-        private static byte[] ComporBlocoInicial(short bitsAlterados, int tamanhoMensagem)
+        private static byte[] ComporBlocoFinal(short bitsAlterados, int tamanhoMensagem)
         {
             //transformar valores dos argumentos em array de bytes
             byte[] bytesNumeroBits = BitConverter.GetBytes(bitsAlterados);
@@ -247,23 +252,23 @@ namespace stegoLearning.WinUI
             }
 
             //n.º de bits e tamanho vão ficar no mesmo bloco de 48 bits ou 6 bytes (em exatamente 16 pixels)
-            byte[] bytesInicio = new byte[BytesShort + BytesInt];
-            Buffer.BlockCopy(bytesNumeroBits, 0, bytesInicio, 0, BytesShort);
-            Buffer.BlockCopy(bytesTamanhoMensagem, 0, bytesInicio, BytesShort, BytesInt);
+            byte[] bytesFim = new byte[BytesShort + BytesInt];
+            Buffer.BlockCopy(bytesNumeroBits, 0, bytesFim, 0, BytesShort);
+            Buffer.BlockCopy(bytesTamanhoMensagem, 0, bytesFim, BytesShort, BytesInt);
 
-            return bytesInicio;
+            return bytesFim;
         }
 
         /// <summary>
         /// Obtém o n.º de bits alterados por componente e o tamanho da mensagem a partir de um bloco de bytes
         /// </summary>
-        /// <param name="bytesInicio"></param>
+        /// <param name="bytesFim"></param>
         /// <returns></returns>
-        private static (short, int) DecomporBlocoInicial(byte[] bytesInicio)
+        private static (short, int) DecomporBlocoFinal(byte[] bytesFim)
         {
             //dividir bloco de bytes em dois conforme o espaço ocupado por cada variável
-            byte[] bytesNumeroBits = bytesInicio.Take(BytesShort).ToArray();
-            byte[] bytesTamanhoMensagem = bytesInicio.Skip(BytesShort).Take(BytesInt).ToArray();
+            byte[] bytesNumeroBits = bytesFim.Take(BytesShort).ToArray();
+            byte[] bytesTamanhoMensagem = bytesFim.Skip(BytesShort).Take(BytesInt).ToArray();
 
             //BitConverter vai criar o array conforme a arquitectura do computador onde corre
             //para assegurar que é coerente entre máquinas:
