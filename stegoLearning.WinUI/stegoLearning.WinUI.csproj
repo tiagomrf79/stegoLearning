@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="imagens\sample_640×426.bmp" />
     <None Remove="ImageWindow.xaml" />
+    <None Remove="teste.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.194" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.197" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
@@ -42,6 +43,11 @@
        package has not yet been restored -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="teste.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ImageWindow.xaml">
