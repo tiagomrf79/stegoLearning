@@ -26,12 +26,12 @@
             </Grid.RowDefinitions>
 
             <Button Grid.Row="0" Name="btnOpenImage" Content="Abrir imagem" Margin="10" Click="btnOpenImage_Click"/>
-            <Image Grid.Row="1" Name="imgOriginal" Height="400" Width="200"/>
+            <Image Grid.Row="1" Name="imgOriginal" Height="300" Width="200"/>
             <TextBox Grid.Row="2" Name="txtMensagemEmissor" Header="Mensagem a esconder" Margin="10"/>
             <TextBox Grid.Row="3" Name="txtPasswordEmissor" Header="Palavra-passe (opcional)" Margin="10"/>
             <TextBox Grid.Row="4" Name="txtBitsEmissor" Header="Bits por componente" Margin="10"/>
             <Button Grid.Row="5" Name="btnSteg" Content="Esteganografar" Margin="10" Click="btnSteg_Click"/>
-            <Image Grid.Row="6" Name="imgStego" Height="400" Width="200"/>
+            <Image Grid.Row="6" Name="imgStego" Height="300" Width="200"/>
             <Button Grid.Row="7" Name="btnSaveImage" Content="Guardar imagem" Margin="10" Click="btnSaveImage_Click"/>
         </Grid>
 

@@ -24,7 +24,7 @@
                 <muxc:NavigationViewItem Content="Manual de utilizador" Icon="Help"/>
                 <muxc:NavigationViewItem Content="Sair" Icon="Cancel"/>
             </muxc:NavigationView.FooterMenuItems>
-            <ScrollViewer>
+            <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
                 <Frame x:Name="ContentFrame" Padding="12,0,12,24" IsTabStop="True"/>
             </ScrollViewer>
         </muxc:NavigationView>

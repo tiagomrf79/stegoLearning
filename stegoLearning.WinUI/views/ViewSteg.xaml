@@ -46,11 +46,11 @@
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Margin="10" Background="Azure">
-                <Image/>
+                <Image MinHeight="250" MinWidth="400"/>
             </Border>
             <Button Grid.Column="1" Content="Esteganografar" Margin="10" HorizontalAlignment="Center"/>
             <Border Grid.Column="2" Margin="10" Background="Beige">
-                <Image/>
+                <Image MinHeight="250" MinWidth="400"/>
             </Border>
         </Grid>
 
@@ -77,7 +77,7 @@
         </Grid>
 
         <!--5.ª linha-->
-        <TextBox IsEnabled="False" Grid.Row="4" Text="RODAPÉ AQUI" MaxHeight="85" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        <TextBox Grid.Row="4" IsEnabled="False" Text="RODAPÉ AQUI" Margin="10" MaxHeight="85" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
     </Grid>
 </Page>
