@@ -45,7 +45,7 @@ namespace stegoLearning.WinUI
         {
             //m_window = new MainWindow();
             //m_window = new ImageWindow();
-            m_window = new teste();
+            m_window = new MenuView();
             m_window.Activate();
         }
 

@@ -13,7 +13,6 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="imagens\sample_640×426.bmp" />
     <None Remove="ImageWindow.xaml" />
     <None Remove="teste.xaml" />
     <None Remove="views\StegView.xaml" />
@@ -28,9 +27,6 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="imagens\sample_640×426.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -52,7 +48,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="teste.xaml">
+    <Page Update="views\MenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

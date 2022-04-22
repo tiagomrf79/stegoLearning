@@ -64,7 +64,7 @@ namespace stegoLearning.WinUI.views
             }
             fileSavePicker.SuggestedFileName = "stego";
 
-            var window = (Application.Current as App)?.m_window as teste;
+            var window = (Application.Current as App)?.m_window as MenuView;
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, hwnd);
 
@@ -104,7 +104,7 @@ namespace stegoLearning.WinUI.views
             picker.FileTypeFilter.Add(".bmp");
             picker.FileTypeFilter.Add(".ico");
 
-            var window = (Application.Current as App)?.m_window as teste;
+            var window = (Application.Current as App)?.m_window as MenuView;
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 

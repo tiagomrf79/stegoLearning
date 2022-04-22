@@ -53,7 +53,7 @@ namespace stegoLearning.WinUI.views
             picker.FileTypeFilter.Add(".png");
             picker.FileTypeFilter.Add(".bmp");
 
-            var window = (Application.Current as App)?.m_window as teste;
+            var window = (Application.Current as App)?.m_window as MenuView;
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
