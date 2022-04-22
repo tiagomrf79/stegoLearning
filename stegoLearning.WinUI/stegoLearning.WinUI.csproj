@@ -16,8 +16,8 @@
     <None Remove="imagens\sample_640×426.bmp" />
     <None Remove="ImageWindow.xaml" />
     <None Remove="teste.xaml" />
-    <None Remove="views\ViewSteg.xaml" />
-    <None Remove="views\ViewUnsteg.xaml" />
+    <None Remove="views\StegView.xaml" />
+    <None Remove="views\UnstegView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="views\ViewUnsteg.xaml">
+    <Page Update="views\UnstegView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -62,7 +62,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="views\ViewSteg.xaml">
+    <Page Update="views\StegView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -24,7 +24,7 @@
                 <muxc:NavigationViewItem Content="Manual de utilizador" Icon="Help"/>
                 <muxc:NavigationViewItem Content="Sair" Icon="Cancel"/>
             </muxc:NavigationView.FooterMenuItems>
-            <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="svConteudo" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
                 <Frame x:Name="ContentFrame" Padding="12,0,12,24" IsTabStop="True"/>
             </ScrollViewer>
         </muxc:NavigationView>
@@ -33,8 +33,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger
-                        MinWindowWidth="{x:Bind NavViewCompactModeThresholdWidth}"/>
+                        <AdaptiveTrigger MinWindowWidth="{x:Bind NavViewCompactModeThresholdWidth}"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ContentFrame.Padding" Value="24,0,24,24"/>
@@ -42,6 +41,5 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-
     </Grid>
 </Window>

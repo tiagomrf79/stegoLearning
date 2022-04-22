@@ -1,0 +1,60 @@
+﻿<Page
+    x:Class="stegoLearning.WinUI.views.UnstegView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:stegoLearning.WinUI.views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!--1.ª linha, coluna com imagem-->
+        <Grid Grid.Row="0" Grid.Column="0" MinHeight="200" MinWidth="400">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="AliceBlue" HorizontalAlignment="Stretch">
+                <Image x:Name="imgStego" Margin="10" MinWidth="400"/>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="btnAbrir" Grid.Column="0" Content="Abrir imagem" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAbrir_Click"/>
+                <Button x:Name="btnAjustar" Grid.Column="1" Content="Ajustar tamanho" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnAjustar_Click"/>
+            </Grid>
+        </Grid>
+
+        <!--1.ª linha, coluna com mensagem-->
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="4*"/>
+            </Grid.RowDefinitions>
+
+            <TextBox x:Name="txtPassword" Grid.Row="0" Header="Palavra-passe" Margin="10"/>
+            <Button x:Name="btnUnsteg" Grid.Row="1" Content="Desteganografar" Margin="10" HorizontalAlignment="Center" Click="btnUnsteg_Click"/>
+            <TextBox x:Name="txtMensagem" Grid.Row="2" Header="Mensagem revelada" TextWrapping="Wrap" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        </Grid>
+
+        <!--2.ª linha-->
+        <TextBox Grid.Row="1" Grid.ColumnSpan="2" IsEnabled="False" Text="RODAPÉ AQUI" Margin="10" MaxHeight="85" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        
+    </Grid>
+</Page>

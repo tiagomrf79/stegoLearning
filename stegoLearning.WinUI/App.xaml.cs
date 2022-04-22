@@ -44,11 +44,11 @@ namespace stegoLearning.WinUI
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             //m_window = new MainWindow();
-            m_window = new ImageWindow();
-            //m_window = new teste();
+            //m_window = new ImageWindow();
+            m_window = new teste();
             m_window.Activate();
         }
 
-        private Window m_window;
+        internal Window m_window;
     }
 }

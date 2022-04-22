@@ -1,19 +1,10 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using stegoLearning.WinUI.views;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,8 +21,8 @@ namespace stegoLearning.WinUI
         // List of ValueTuple holding the Navigation Tag and the relative Navigation Page
         private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
         {
-            ("steg", typeof(ViewSteg)),
-            ("unsteg", typeof(ViewUnsteg))
+            ("steg", typeof(StegView)),
+            ("unsteg", typeof(UnstegView))
         };
 
         public teste()
