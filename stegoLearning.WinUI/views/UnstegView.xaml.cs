@@ -88,13 +88,23 @@ namespace stegoLearning.WinUI.views
             }
             return writableBitmap;
         }
-        private void AjustarTamanhoImagem()
+        public void AjustarTamanhoImagem()
         {
-            double fator = 0.40; //40% para cada imagem e o restante para o botão esteganografar, margens, etc
-            imgStego.Width = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth * fator;
+            WriteableBitmap imagem = (WriteableBitmap)imgStego.Source;
+
+            if (imagem != null)
+            {
+                //a imagem deve ter, pelo menos, o mesmo tamanho do botão que lhe fica abaixo
+                double minLargura = btnAbrir.ActualWidth;
+                //a imagem deve ter, no máximo, metade do espaço do formulário
+                double maxLargura = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth / 2 - (imgStego.Margin.Left + imgStego.Margin.Right);
+
+                double largura = Math.Max(minLargura, maxLargura);
+                imgStego.Width = largura;
+            }
         }
 
-        private void btnAjustar_Click(object sender, RoutedEventArgs e)
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             AjustarTamanhoImagem();
         }

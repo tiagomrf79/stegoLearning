@@ -40,9 +40,6 @@ namespace stegoLearning.WinUI.views
         {
             imgOriginal.Source = await AbrirConverterImagem();
             imgStego.Source = null;
-
-            //ajustar o tamanho da imagem ao espaço disponível (ajusta todo o formulário)
-            AjustarTamanhoImagem();
         }
 
         private async void btnGuardar_Click(object sender, RoutedEventArgs e)
@@ -141,18 +138,6 @@ namespace stegoLearning.WinUI.views
             return writableBitmap;
         }
 
-        private void btnAjustar_Click(object sender, RoutedEventArgs e)
-        {
-            AjustarTamanhoImagem();
-        }
-
-        private void AjustarTamanhoImagem()
-        {
-            double fator = 0.40; //40% para cada imagem e o restante para o botão esteganografar, margens, etc
-            imgOriginal.Width = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth * fator;
-            imgStego.Width = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth * fator;
-        }
-
         private void btnSteg_Click(object sender, RoutedEventArgs e)
         {
             string mensagem = txtMensagem.Text;
@@ -173,19 +158,6 @@ namespace stegoLearning.WinUI.views
 
             WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
             imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
-        }
-
-        private void imgOriginal_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
-        {
-            //Transform transform = imgOriginal.RenderTransform;
-            //ScaleTransform scaleTransform = transform.;
-
-            //PointerPoint currentPoint = e.GetCurrentPoint(imgOriginal);
-            //int delta = currentPoint.Properties.MouseWheelDelta;
-
-            //double zoom = delta > 0 ? .2 : -.2;
-            //transform.ScaleX += zoom;
-            //transform.ScaleY += zoom;
         }
     }
 }

@@ -18,17 +18,22 @@ namespace stegoLearning.WinUI
     {
         private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
-        private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
-        {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        }
-
         // List of ValueTuple holding the Navigation Tag and the relative Navigation Page
         private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
         {
             ("steg", typeof(StegView)),
             ("unsteg", typeof(UnstegView))
         };
+
+        public MenuView()
+        {
+            this.InitializeComponent();
+        }
+
+        private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
+        {
+            throw new Exception("Não foi possível abrir a página " + e.SourcePageType.FullName);
+        }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
@@ -81,12 +86,5 @@ namespace stegoLearning.WinUI
                     ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
             }
         }
-
-        public MenuView()
-        {
-            this.InitializeComponent();
-        }
-
-
     }
 }

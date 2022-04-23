@@ -6,7 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    SizeChanged="Page_SizeChanged">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -20,24 +21,14 @@
         </Grid.ColumnDefinitions>
 
         <!--1.ª linha, coluna com imagem-->
-        <Grid Grid.Row="0" Grid.Column="0" MinHeight="200" MinWidth="400">
+        <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="White" Margin="10" HorizontalAlignment="Stretch">
-                <Image x:Name="imgStego" MinWidth="400"/>
-            </Border>
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <Button x:Name="btnAbrir" Grid.Column="0" Content="Abrir imagem" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAbrir_Click"/>
-                <Button x:Name="btnAjustar" Grid.Column="1" Content="Ajustar tamanho" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnAjustar_Click"/>
-            </Grid>
+            <Image Grid.Row="0" Margin="10" x:Name="imgStego"/>
+            <Button Grid.Row="1" x:Name="btnAbrir" Grid.Column="0" Content="Abrir imagem" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAbrir_Click"/>
         </Grid>
 
         <!--1.ª linha, coluna com mensagem-->
