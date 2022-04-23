@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -172,6 +173,19 @@ namespace stegoLearning.WinUI.views
 
             WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
             imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
+        }
+
+        private void imgOriginal_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+            //Transform transform = imgOriginal.RenderTransform;
+            //ScaleTransform scaleTransform = transform.;
+
+            //PointerPoint currentPoint = e.GetCurrentPoint(imgOriginal);
+            //int delta = currentPoint.Properties.MouseWheelDelta;
+
+            //double zoom = delta > 0 ? .2 : -.2;
+            //transform.ScaleX += zoom;
+            //transform.ScaleY += zoom;
         }
     }
 }
