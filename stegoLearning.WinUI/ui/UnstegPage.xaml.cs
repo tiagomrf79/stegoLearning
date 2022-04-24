@@ -13,9 +13,9 @@ using Windows.Storage.Streams;
 
 namespace stegoLearning.WinUI.views
 {
-    public sealed partial class UnstegView : Page
+    public sealed partial class UnstegPage : Page
     {
-        public UnstegView()
+        public UnstegPage()
         {
             this.InitializeComponent();
         }
@@ -47,7 +47,7 @@ namespace stegoLearning.WinUI.views
             picker.FileTypeFilter.Add(".png");
             picker.FileTypeFilter.Add(".bmp");
 
-            var window = (Application.Current as App)?.m_window as MenuView;
+            var window = (Application.Current as App)?.m_window as MenuWindow;
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 

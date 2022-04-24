@@ -14,18 +14,18 @@ https://docs.microsoft.com/en-us/windows/apps/design/controls/navigationview
 
 namespace stegoLearning.WinUI
 {
-    public sealed partial class MenuView : Window
+    public sealed partial class MenuWindow : Window
     {
         private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
         // List of ValueTuple holding the Navigation Tag and the relative Navigation Page
         private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
         {
-            ("steg", typeof(StegView)),
-            ("unsteg", typeof(UnstegView))
+            ("steg", typeof(StegPage)),
+            ("unsteg", typeof(UnstegPage))
         };
 
-        public MenuView()
+        public MenuWindow()
         {
             this.InitializeComponent();
         }
@@ -100,11 +100,11 @@ namespace stegoLearning.WinUI
                 string tag = ((NavigationViewItem)NavView.SelectedItem).Tag.ToString();
                 if (tag == "steg")
                 {
-                    (ContentFrame.Content as StegView).AjustarTamanhoImagem(e.NewSize.Width);
+                    (ContentFrame.Content as StegPage).AjustarTamanhoImagem(e.NewSize.Width);
                 }
                 else if (tag == "unsteg")
                 {
-                    (ContentFrame.Content as UnstegView).AjustarTamanhoImagem(e.NewSize.Width);
+                    (ContentFrame.Content as UnstegPage).AjustarTamanhoImagem(e.NewSize.Width);
                 }
             }
         }

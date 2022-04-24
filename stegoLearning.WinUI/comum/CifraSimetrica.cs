@@ -70,10 +70,11 @@ namespace stegoLearning.WinUI
 
                 using (var memoryStream = new MemoryStream())
                 {
-                    var cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
-
-                    cryptoStream.Write(mensagemParaEncriptar, 0, mensagemParaEncriptar.Length);
-                    cryptoStream.FlushFinalBlock();
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cryptoStream.Write(mensagemParaEncriptar, 0, mensagemParaEncriptar.Length);
+                        cryptoStream.FlushFinalBlock();
+                    }
 
                     var dadosEncriptados = salt;
                     dadosEncriptados = dadosEncriptados.Concat(iv).ToArray();
@@ -111,10 +112,12 @@ namespace stegoLearning.WinUI
                 {
                     try
                     {
-                        var cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
-
-                        cryptoStream.Write(mensagemEncriptada, 0, mensagemEncriptada.Length);
-                        cryptoStream.FlushFinalBlock();
+                        //var cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
+                        {
+                            cryptoStream.Write(mensagemEncriptada, 0, mensagemEncriptada.Length);
+                            cryptoStream.FlushFinalBlock();
+                        }
 
                         var mensagemDesencriptada = memoryStream.ToArray();
                         return mensagemDesencriptada;

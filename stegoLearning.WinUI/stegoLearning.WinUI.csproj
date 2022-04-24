@@ -14,8 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="teste.xaml" />
-    <None Remove="views\StegView.xaml" />
-    <None Remove="views\UnstegView.xaml" />
+    <None Remove="ui\StegPage.xaml" />
+    <None Remove="ui\UnstegPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>

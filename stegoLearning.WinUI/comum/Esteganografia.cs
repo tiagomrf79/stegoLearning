@@ -21,6 +21,7 @@ namespace stegoLearning.WinUI
         /// <returns></returns>
         public static WriteableBitmap EsteganografarImagem(WriteableBitmap imagemOriginal, byte[] dadosMensagem, short bitsPorComponente)
         {
+
             int tamanhoMensagem = dadosMensagem.Length;
 
             int largura = imagemOriginal.PixelWidth;
@@ -68,22 +69,12 @@ namespace stegoLearning.WinUI
 
             #region CRIAR IMAGEM
 
-            //obter bytes não alterados
-            int numPixeisRestante = numPixeisTotal - (numPixeisMensagem + numPixeisFim);
-            byte[] bytesImagemRestante = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, (uint)numPixeisMensagem, numPixeisRestante);
-
-            //juntar tudo no mesmo array (mensagem + restante + fim)
-            int numBytesFim = bytesImagemFim.Length;
-            int numBytesMensagem = bytesImagemMensagem.Length;
+            //criar uma cópia da imagem original, onde insere a mensagem e bloco final
             int numBytesTotal = numPixeisTotal * 4;
-            int numBytesRestante = numBytesTotal - (numBytesMensagem + numBytesFim);
-            byte[] bytesImagem = new byte[numBytesTotal];
-            Buffer.BlockCopy(bytesImagemMensagem, 0, bytesImagem, 0, numBytesMensagem);
-            Buffer.BlockCopy(bytesImagemRestante, 0, bytesImagem, numBytesMensagem, numBytesRestante);
-            Buffer.BlockCopy(bytesImagemFim, 0, bytesImagem, numBytesMensagem + numBytesRestante, numBytesFim);
-
-            //criar imagem a partir do array obtido
-            WriteableBitmap imagemAlterada = TratamentoImagem.ConverterBytesEmImagem(bytesImagem, largura, altura);
+            int numBytesFim = bytesImagemFim.Length;
+            WriteableBitmap imagemAlterada = TratamentoImagem.DuplicarImagem(imagemOriginal);
+            TratamentoImagem.AlterarBytesEmImagem(imagemAlterada, bytesImagemMensagem, 0);
+            TratamentoImagem.AlterarBytesEmImagem(imagemAlterada, bytesImagemFim, numBytesTotal - numBytesFim);
 
             #endregion
 

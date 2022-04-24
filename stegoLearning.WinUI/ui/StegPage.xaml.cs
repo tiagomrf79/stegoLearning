@@ -14,9 +14,9 @@ using Windows.Storage.Streams;
 
 namespace stegoLearning.WinUI.views
 {
-    public sealed partial class StegView : Page
+    public sealed partial class StegPage : Page
     {
-        public StegView()
+        public StegPage()
         {
             this.InitializeComponent();
         }
@@ -48,7 +48,7 @@ namespace stegoLearning.WinUI.views
             }
             fileSavePicker.SuggestedFileName = "stego";
 
-            var window = (Application.Current as App)?.m_window as MenuView;
+            var window = (Application.Current as App)?.m_window as MenuWindow;
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, hwnd);
 
@@ -88,7 +88,7 @@ namespace stegoLearning.WinUI.views
             picker.FileTypeFilter.Add(".bmp");
             picker.FileTypeFilter.Add(".ico");
 
-            var window = (Application.Current as App)?.m_window as MenuView;
+            var window = (Application.Current as App)?.m_window as MenuWindow;
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 

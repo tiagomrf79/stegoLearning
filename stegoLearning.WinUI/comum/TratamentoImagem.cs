@@ -71,24 +71,38 @@ namespace stegoLearning.WinUI
         }
 
         /// <summary>
-        /// Retorna uma imagem a partir dos seus bytes
+        /// Altera um bloco de bytes de uma determinada imagem
         /// </summary>
+        /// <param name="imagem"></param>
         /// <param name="dadosImagem"></param>
-        /// <param name="largura"></param>
-        /// <param name="altura"></param>
-        /// <returns></returns>
-        public static WriteableBitmap ConverterBytesEmImagem(byte[] dadosImagem, int largura, int altura)
+        /// <param name="posicao"></param>
+        public static void AlterarBytesEmImagem(WriteableBitmap imagem, byte[] dadosImagem, int posicao)
         {
-            //criar nova imagem
-            WriteableBitmap writeableBitmap = new WriteableBitmap(largura, altura);
-
-            //usar os bytes da imagem (dadosImagem) para desenhar a nova imagem
-            using (Stream stream = writeableBitmap.PixelBuffer.AsStream())
+            using (Stream stream = imagem.PixelBuffer.AsStream())
             {
-                stream.Write(dadosImagem, 0, dadosImagem.Length);
+                stream.Seek(posicao, SeekOrigin.Begin);
+                stream.WriteAsync(dadosImagem, 0, dadosImagem.Length);
+            }
+        }
+
+        /// <summary>
+        /// Cria uma cópia de uma imagem de origem
+        /// </summary>
+        /// <param name="origem"></param>
+        /// <returns></returns>
+        public static WriteableBitmap DuplicarImagem(WriteableBitmap origem)
+        {
+            WriteableBitmap destino = new WriteableBitmap(origem.PixelWidth, origem.PixelHeight);
+
+            using (Stream streamDestino = destino.PixelBuffer.AsStream())
+            {
+                using (Stream streamOrigem = origem.PixelBuffer.AsStream())
+                {
+                    streamOrigem.CopyToAsync(streamDestino);
+                }
             }
 
-            return writeableBitmap;
+            return destino;
         }
     }
 }
