@@ -24,7 +24,7 @@
         </Grid.ColumnDefinitions>
 
         <!--1.ª linha-->
-        <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" x:Name="txtMensagem" Header="Mensagem a esteganografar na imagem:" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="135" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" x:Name="txtMensagem" Header="Mensagem a esteganografar na imagem:" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="135" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"/>
 
         <!--2.ª linha-->
         <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cbBitsPorComponente" Header="N.º de bits utilizados por componente:" Margin="10" HorizontalAlignment="Stretch">
@@ -32,12 +32,12 @@
             <ComboBoxItem Content="2"/>
             <ComboBoxItem Content="4"/>
         </ComboBox>
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="txtPassword" Header="Palavra-passe (opcional):" Margin="10"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="txtPassword" Header="Palavra-passe (opcional):" Margin="10" HorizontalAlignment="Stretch"/>
 
         <!--3.ª linha-->
-        <Image Grid.Row="2" Grid.Column="0" Margin="10" x:Name="imgOriginal"/>
+        <Image Grid.Row="2" Grid.Column="0" Margin="10" x:Name="imgOriginal" HorizontalAlignment="Left"/>
         <Button Grid.Row="2" Grid.Column="1" x:Name="btnSteg" Content="Esteganografar" Margin="10" HorizontalAlignment="Center" Click="btnSteg_Click"/>
-        <Image Grid.Row="2" Grid.Column="2" Margin="10" x:Name="imgStego"/>
+        <Image Grid.Row="2" Grid.Column="2" Margin="10" x:Name="imgStego" HorizontalAlignment="Right"/>
 
 
         <!--4.ª linha-->
@@ -52,7 +52,7 @@
                 <RadioButton x:Name="rbBmp" Content="BMP" IsChecked="True" />
                 <RadioButton x:Name="rbPng" Content="PNG"/>
             </RadioButtons>
-            <Button x:Name="btnGuardar" Grid.Column="1" Content="Guardar imagem" VerticalAlignment="Top" Click="btnGuardar_Click"/>
+            <Button x:Name="btnGuardar" Grid.Column="1" Content="Guardar imagem" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnGuardar_Click"/>
         </Grid>
 
         <!--5.ª linha-->

@@ -1,34 +1,19 @@
-﻿using Microsoft.UI.Input;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace stegoLearning.WinUI.views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class StegView : Page
     {
         public StegView()
@@ -40,6 +25,7 @@ namespace stegoLearning.WinUI.views
         {
             imgOriginal.Source = await AbrirConverterImagem();
             imgStego.Source = null;
+            AjustarTamanhoImagem();
         }
 
         private async void btnGuardar_Click(object sender, RoutedEventArgs e)
@@ -158,6 +144,25 @@ namespace stegoLearning.WinUI.views
 
             WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
             imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
+        }
+
+        public void AjustarTamanhoImagem(double novaLargura = 0)
+        {
+            //se não receber parâmetro da novaLargura, obter largura atual
+            if (novaLargura == 0)
+            {
+                novaLargura = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth;
+            }
+
+            //a imagem deve ter, pelo menos, a mesma largura dos botões ficam abaixo da imagem stego
+            double minLargura = rbBmp.ActualWidth + rbPng.ActualWidth + btnGuardar.ActualWidth + 20;
+
+            //a imagem deve ter, no máximo, cerca de metade do espaço do formulário
+            double maxLargura = novaLargura * 0.40;
+
+            double largura = Math.Max(minLargura, maxLargura);
+            imgOriginal.Width = largura;
+            imgStego.Width = largura;
         }
     }
 }

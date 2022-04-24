@@ -27,21 +27,16 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItemSeparator/>
-                <NavigationViewItem Tag="exemplos"  Content="Ver exemplos">
+                <!--<NavigationViewItem Tag="exemplos"  Content="Ver exemplos">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF168;"/>
                     </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                </NavigationViewItem>-->
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Content="Manual de utilizador">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xF57E;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem Content="Sair" Icon="ClosePane"/>
+                <NavigationViewItem Tag="exit" Content="Sair" Icon="ClosePane"/>
             </NavigationView.FooterMenuItems>
-            <ScrollViewer x:Name="svConteudo" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="svConteudo" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" SizeChanged="svConteudo_SizeChanged">
                 <Frame x:Name="ContentFrame" Padding="12,0,12,24" IsTabStop="True" NavigationFailed="ContentFrame_NavigationFailed"/>
             </ScrollViewer>
         </NavigationView>

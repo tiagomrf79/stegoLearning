@@ -11,14 +11,8 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace stegoLearning.WinUI.views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class UnstegView : Page
     {
         public UnstegView()
@@ -88,25 +82,22 @@ namespace stegoLearning.WinUI.views
             }
             return writableBitmap;
         }
-        public void AjustarTamanhoImagem()
+        public void AjustarTamanhoImagem(double novaLargura = 0)
         {
-            WriteableBitmap imagem = (WriteableBitmap)imgStego.Source;
-
-            if (imagem != null)
+            //se não receber parâmetro da novaLargura, obter largura atual
+            if (novaLargura == 0)
             {
-                //a imagem deve ter, pelo menos, o mesmo tamanho do botão que lhe fica abaixo
-                double minLargura = btnAbrir.ActualWidth;
-                //a imagem deve ter, no máximo, metade do espaço do formulário
-                double maxLargura = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth / 2 - (imgStego.Margin.Left + imgStego.Margin.Right);
-
-                double largura = Math.Max(minLargura, maxLargura);
-                imgStego.Width = largura;
+                novaLargura = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth;
             }
-        }
 
-        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            AjustarTamanhoImagem();
+            //a imagem deve ter, pelo menos, a mesma largura dos botões ficam abaixo da imagem stego
+            double minLargura = btnAbrir.ActualWidth + 20;
+
+            //a imagem deve ter, no máximo, cerca de metade do espaço do formulário
+            double maxLargura = novaLargura * 0.45;
+
+            double largura = Math.Max(minLargura, maxLargura);
+            imgStego.Width = largura;
         }
     }
 }

@@ -6,8 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    SizeChanged="Page_SizeChanged">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -27,8 +26,8 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Image Grid.Row="0" Margin="10" x:Name="imgStego"/>
-            <Button Grid.Row="1" x:Name="btnAbrir" Grid.Column="0" Content="Abrir imagem" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAbrir_Click"/>
+            <Image Grid.Row="0" Margin="10" x:Name="imgStego" HorizontalAlignment="Left"/>
+            <Button Grid.Row="1" x:Name="btnAbrir" Content="Abrir imagem" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAbrir_Click"/>
         </Grid>
 
         <!--1.ª linha, coluna com mensagem-->

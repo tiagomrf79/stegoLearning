@@ -53,6 +53,11 @@ namespace stegoLearning.WinUI
             if (args.InvokedItemContainer != null)
             {
                 var navItemTag = args.InvokedItemContainer.Tag.ToString();
+                if (navItemTag == "exit")
+                {
+                    Environment.Exit(0);
+                }
+
                 NavView_Navigate(navItemTag, args.RecommendedNavigationTransitionInfo);
             }
         }
@@ -84,6 +89,23 @@ namespace stegoLearning.WinUI
 
                 NavView.Header =
                     ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
+            }
+        }
+
+        private void svConteudo_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //chama os métodos específicos de cada página para ajustar o conteúdo ao espaço disponível
+            if (ContentFrame.SourcePageType != null)
+            {
+                string tag = ((NavigationViewItem)NavView.SelectedItem).Tag.ToString();
+                if (tag == "steg")
+                {
+                    (ContentFrame.Content as StegView).AjustarTamanhoImagem(e.NewSize.Width);
+                }
+                else if (tag == "unsteg")
+                {
+                    (ContentFrame.Content as UnstegView).AjustarTamanhoImagem(e.NewSize.Width);
+                }
             }
         }
     }
