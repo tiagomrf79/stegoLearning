@@ -273,6 +273,12 @@ namespace stegoLearning.WinUI
             short numeroBits = BitConverter.ToInt16(bytesNumeroBits, 0);
             int tamanhoMensagem = BitConverter.ToInt32(bytesTamanhoMensagem, 0);
 
+            //se os parâmetros obtidos forem inconsistentes com o algoritmo de esteganografia => abortar e informar
+            if (numeroBits != 1 && numeroBits != 2 && numeroBits != 4 && tamanhoMensagem < 1)
+            {
+                throw new ArgumentException("Não foi possível encontrar uma mensagem na imagem escolhida.");
+            }
+
             return (numeroBits, tamanhoMensagem);
         }
     }

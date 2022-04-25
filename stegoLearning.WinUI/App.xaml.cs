@@ -1,21 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
-using stegoLearning.WinUI.views;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,12 +25,15 @@ namespace stegoLearning.WinUI
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            m_window = new MenuWindow();
-            m_window.Activate();
+            appWindow = new MenuWindow();
+            appWindow.Activate();
+            appWindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(appWindow);
         }
 
-        internal Window m_window;
+        //preciso de referenciar a janela da aplicação para poder abrir e guardar ficheiros
+        public static MenuWindow appWindow { get; private set; }
+        public static IntPtr appWindowHandle { get; private set; }
     }
 }

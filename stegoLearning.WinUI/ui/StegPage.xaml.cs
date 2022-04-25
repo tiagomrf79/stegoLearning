@@ -19,13 +19,22 @@ namespace stegoLearning.WinUI.views
         public StegPage()
         {
             this.InitializeComponent();
+            //notify view when viewmodel is done
+            //var viewModel = new ExampleUserControl_ViewModel();
+            //viewModel.ChildWindowsCloseRequested += OnChildWindowsCloseRequested;
         }
 
         private async void btnAbrir_Click(object sender, RoutedEventArgs e)
         {
-            imgOriginal.Source = await AbrirConverterImagem();
-            imgStego.Source = null;
-            AjustarTamanhoImagem();
+            WriteableBitmap writeableBitmap = await AbrirImagemLocal();
+            
+            //só se escolher um ficheiro é que muda o conteúdo das imagens da UI
+            if (writeableBitmap != null)
+            {
+                imgOriginal.Source = writeableBitmap;
+                imgStego.Source = null;
+                AjustarTamanhoImagem();
+            }
         }
 
         private async void btnGuardar_Click(object sender, RoutedEventArgs e)
@@ -48,13 +57,13 @@ namespace stegoLearning.WinUI.views
             }
             fileSavePicker.SuggestedFileName = "stego";
 
-            var window = (Application.Current as App)?.m_window as MenuWindow;
-            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, hwnd);
+            //var window = (Application.Current as App)?.m_window as MenuWindow;
+            //IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, App.appWindowHandle);
 
-            StorageFile outputFile = await fileSavePicker.PickSaveFileAsync();
+            StorageFile storageFile = await fileSavePicker.PickSaveFileAsync();
 
-            if (outputFile != null)
+            if (storageFile != null)
             {
                 WriteableBitmap writeableBitmap = (WriteableBitmap)imgStego.Source;
 
@@ -66,7 +75,7 @@ namespace stegoLearning.WinUI.views
                     writeableBitmap.PixelHeight);
 
                 //gravar softwareBitmap no ficheiro escolhido
-                using (IRandomAccessStream stream = await outputFile.OpenAsync(FileAccessMode.ReadWrite))
+                using (IRandomAccessStream stream = await storageFile.OpenAsync(FileAccessMode.ReadWrite))
                 {
                     //converter imagem no formato escolhido
                     BitmapEncoder encoder = await BitmapEncoder.CreateAsync(formatoImagemId, stream);
@@ -77,7 +86,7 @@ namespace stegoLearning.WinUI.views
             }
         }
 
-        private async Task<WriteableBitmap> AbrirConverterImagem()
+        private async Task<WriteableBitmap> AbrirImagemLocal()
         {
             FileOpenPicker picker = new FileOpenPicker();
             picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
@@ -88,16 +97,25 @@ namespace stegoLearning.WinUI.views
             picker.FileTypeFilter.Add(".bmp");
             picker.FileTypeFilter.Add(".ico");
 
-            var window = (Application.Current as App)?.m_window as MenuWindow;
-            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, App.appWindowHandle);
 
-            StorageFile inputFile = await picker.PickSingleFileAsync();
-
-            WriteableBitmap writableBitmap = null;
-            if (inputFile != null)
+            StorageFile storageFile = await picker.PickSingleFileAsync();
+            if (storageFile != null)
             {
-                using (IRandomAccessStream fileStream = await inputFile.OpenAsync(FileAccessMode.Read))
+                return await ConverterImagem(storageFile);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static async Task<WriteableBitmap> ConverterImagem(StorageFile storageFile)
+        {
+            WriteableBitmap writableBitmap = null;
+            if (storageFile != null)
+            {
+                using (IRandomAccessStream fileStream = await storageFile.OpenAsync(FileAccessMode.Read))
                 {
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(fileStream);
 

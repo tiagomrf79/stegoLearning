@@ -47,9 +47,10 @@ namespace stegoLearning.WinUI.views
             picker.FileTypeFilter.Add(".png");
             picker.FileTypeFilter.Add(".bmp");
 
-            var window = (Application.Current as App)?.m_window as MenuWindow;
-            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+            //var window = (Application.Current as App)?.mainWindow as MenuWindow;
+            //IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            //WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, App.appWindowHandle);
 
             StorageFile inputFile = await picker.PickSingleFileAsync();
 
