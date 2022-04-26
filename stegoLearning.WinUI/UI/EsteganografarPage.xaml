@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -54,11 +54,10 @@
                 <RadioButton x:Name="rbBmp" Content="BMP" IsChecked="True" />
                 <RadioButton x:Name="rbPng" Content="PNG"/>
             </RadioButtons>
-            <Button x:Name="btnGuardar" Grid.Column="1" IsEnabled="False" Content="Guardar imagem" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnGuardar_Click"/>
+            <Button x:Name="btnGuardar" Grid.Column="1" IsEnabled="True" Content="Guardar imagem" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnGuardar_Click"/>
         </Grid>
 
         <!--5.ª linha-->
-        <TextBox Grid.Row="4" Grid.ColumnSpan="3" IsEnabled="False" Text="RODAPÉ AQUI" Margin="10" MaxHeight="85" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-
+        <TextBlock Grid.Row="4" Grid.ColumnSpan="3" x:Name="txtErros" Foreground="Red" Margin="10" VerticalAlignment="Bottom"/>
     </Grid>
 </Page>

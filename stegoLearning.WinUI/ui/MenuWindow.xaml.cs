@@ -12,7 +12,7 @@ adaptado de exemplo em:
 https://docs.microsoft.com/en-us/windows/apps/design/controls/navigationview
 */
 
-namespace stegoLearning.WinUI
+namespace stegoLearning.WinUI.UI
 {
     public sealed partial class MenuWindow : Window
     {

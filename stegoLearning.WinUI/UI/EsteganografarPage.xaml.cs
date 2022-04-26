@@ -5,6 +5,7 @@ using stegoLearning.WinUI.comum;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,9 +46,9 @@ namespace stegoLearning.WinUI.UI
                 {
                     writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
                 }
-                catch (Exception exception)
+                catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
                 {
-                    //informar que não possível abrir imagem
+                    txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
                     return;
                 }
             }
@@ -67,7 +68,9 @@ namespace stegoLearning.WinUI.UI
         {
             if (imgStego.Source == null)
             {
-                throw new ArgumentException("É necessário esteganografar uma imagem antes de poder guardá-la.");
+                txtErros.Text = "Não foi encontrada uma imagem esteganografada para guardar. " +
+                    "Clique em esteganografar para gerar essa imagem a partir da imagem da esquerda.";
+                return;
             }
 
 
@@ -94,16 +97,8 @@ namespace stegoLearning.WinUI.UI
             //só se não cancelar é que cria um novo ficheiro
             if (storageFile != null)
             {
-                try
-                {
-                    await ImagemIO.GravarBitmapEmFicheiro((WriteableBitmap)imgStego.Source, storageFile, formatoImagemId);
-                    //informar que gravação foi bem sucedida
-                }
-                catch (Exception exception)
-                {
-                    //informar que gravação falhou
-                    return;
-                }
+                await ImagemIO.GravarBitmapEmFicheiro((WriteableBitmap)imgStego.Source, storageFile, formatoImagemId);
+                txtErros.Text = "Imagem guardada com sucesso!";
             }
         }
 
@@ -111,11 +106,13 @@ namespace stegoLearning.WinUI.UI
         {
             if (string.IsNullOrEmpty(txtMensagem.Text))
             {
-                throw new ArgumentException("Não indicou a mensagem.");
+                txtErros.Text = "Por favor preencha o campo com a mensagem que pretende esteganografar.";
+                return;
             }
             else if (imgOriginal.Source == null)
             {
-                throw new ArgumentException("Não seleccionou uma imagem.");
+                txtErros.Text = "Por favor escolha uma imagem para ser esteganografada.";
+                return;
             }
 
             //transformar mensagem digitada em bytes
@@ -134,6 +131,7 @@ namespace stegoLearning.WinUI.UI
             string password = txtPassword.Text;
             if (password.Length > 0)
             {
+                ///////////////////////////////////////////////////////////////////////////////////////
                 try
                 {
                     bytesMensagem = CifraSimetrica.EncriptarMensagem(mensagem, password);
@@ -146,13 +144,15 @@ namespace stegoLearning.WinUI.UI
             }
 
             WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
+            ///////////////////////////////////////////////////////////////////////////////////////
             try
             {
                 imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
                 btnGuardar.IsEnabled = true;
             }
-            catch (Exception)
+            catch (ArgumentOutOfRangeException exception)
             {
+                txtErros.Text = exception.Message;
                 return;
             }
         }

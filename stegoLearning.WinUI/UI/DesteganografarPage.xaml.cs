@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using stegoLearning.WinUI.comum;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,9 +42,9 @@ namespace stegoLearning.WinUI.UI
                 {
                     writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
                 }
-                catch (Exception exception)
+                catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
                 {
-                    //informar que não possível abrir imagem
+                    txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
                     return;
                 }
             }
@@ -61,18 +62,20 @@ namespace stegoLearning.WinUI.UI
         {
             if (imgStego.Source == null)
             {
-                throw new ArgumentException("Não seleccionou uma imagem.");
+                txtErros.Text = "Por favor escolha uma imagem para ser desteganografada.";
+                return;
             }
 
             byte[] dados;
+            ///////////////////////////////////////////////////////////////////////////////////////
             try
             {
                 dados = Esteganografia.DesteganografarImagem((WriteableBitmap)imgStego.Source);
             }
-            catch (Exception exception)
+            catch (ArgumentOutOfRangeException exception)
             {
-                //informar que houve um problema e não encontrou nenhuma mensagem
-                ErrosLog.EscreverErroEmLog(exception);
+                txtErros.Text = exception.Message;
+                txtMensagem.Text = "";
                 return;
             }
 
@@ -80,6 +83,7 @@ namespace stegoLearning.WinUI.UI
             string password = txtPassword.Text;
             if (password.Length > 0)
             {
+                ///////////////////////////////////////////////////////////////////////////////////////
                 try
                 {
                     dados = CifraSimetrica.DesencriptarDados(dados, password);

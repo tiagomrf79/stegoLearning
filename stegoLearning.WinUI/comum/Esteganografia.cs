@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Media.Imaging;
+using stegoLearning.WinUI.comum;
 using System;
 using System.Collections;
 using System.Linq;
@@ -28,24 +29,6 @@ namespace stegoLearning.WinUI
             int altura = imagemOriginal.PixelHeight;
             int numPixeisTotal = altura * largura;
 
-            #region MENSAGEM
-
-            //converter bloco da mensagem (encriptada ou não) em sequência binária
-            BitArray bitsMensagem = SequenciaBinaria.BytesParaSequenciaBinaria(dadosMensagem);
-
-            //obter pixéis da imagem que serão alterados com essa sequência binária
-            int numPixeisMensagem = CalcularPixeisUtilizados(bitsMensagem.Length, bitsPorComponente);
-            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, 0, numPixeisMensagem);
-            byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
-
-            //alterar esses pixeis com a sequência binária respetiva
-            pixeisMensagem = AlterarBitsComponentes(pixeisMensagem, bitsMensagem, bitsPorComponente);
-
-            //obter bytes com as alterações feitas
-            bytesImagemMensagem = TratamentoImagem.ConverterPixeisEmBytes(pixeisMensagem);
-
-            #endregion
-
             #region BLOCO FINAL
 
             //construir um bloco com os bits alterados e o tamanho da mensagem, que irá ocupar 48 bits
@@ -64,6 +47,33 @@ namespace stegoLearning.WinUI
 
             //obter bytes com as alterações feitas
             bytesImagemFim = TratamentoImagem.ConverterPixeisEmBytes(pixeisFim);
+
+            #endregion
+
+            #region MENSAGEM
+
+            //converter bloco da mensagem (encriptada ou não) em sequência binária
+            BitArray bitsMensagem = SequenciaBinaria.BytesParaSequenciaBinaria(dadosMensagem);
+
+            //calcular quantos pixéis vão ser precisos para esta mensagem e bits por componente
+            int numPixeisMensagem = CalcularPixeisUtilizados(bitsMensagem.Length, bitsPorComponente);
+
+            //abortar caso a mensagem não caiba na imagem
+            if (numPixeisMensagem + numPixeisFim > numPixeisTotal)
+            {
+                throw new ArgumentOutOfRangeException(null, "A imagem escolhida não permite guardar toda a mensagem." +
+                    " Escolha uma mensagem mais curta, aumente o n.º de bits utilizados ou escolha uma imagem de maiores dimensões.");
+            }
+
+            //obter pixéis da imagem que serão alterados com a respetiva sequência binária
+            byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, 0, numPixeisMensagem);
+            byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
+
+            //alterar esses pixeis com a sequência binária respetiva
+            pixeisMensagem = AlterarBitsComponentes(pixeisMensagem, bitsMensagem, bitsPorComponente);
+
+            //obter bytes com as alterações feitas
+            bytesImagemMensagem = TratamentoImagem.ConverterPixeisEmBytes(pixeisMensagem);
 
             #endregion
 
@@ -111,14 +121,28 @@ namespace stegoLearning.WinUI
             int numBytesMensagem;
             (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoFinal(dadosFim);
 
+            if (bitsAlteradosPorComponente != 1 && bitsAlteradosPorComponente != 2 && bitsAlteradosPorComponente != 4
+                || numBytesMensagem < 1)
+            {
+                throw new ArgumentOutOfRangeException(null, "Não foi possível encontrar uma mensagem esteganografada.");
+            }
+
             #endregion
 
             #region MENSAGEM
 
             int numBitsMensagem = numBytesMensagem * 8;
 
-            //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem
+            //calcular quantos pixeis estarão a ser utilizados pela mensagem
             int numPixeisMensagem = CalcularPixeisUtilizados(numBitsMensagem, bitsAlteradosPorComponente);
+
+            //abortar caso o tamanho da mensagem obtido exceda o permitido pela imagem
+            if (numPixeisMensagem + numPixeisFim > numPixeisTotal)
+            {
+                throw new ArgumentOutOfRangeException(null, "Não foi possível encontrar uma mensagem esteganografada.");
+            }
+
+            //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem
             byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemStego, 0, numPixeisMensagem);
             byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
 

@@ -1,5 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
+using stegoLearning.WinUI.comum;
+using stegoLearning.WinUI.UI;
 using System;
+using Windows.UI.Popups;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -17,9 +20,24 @@ namespace stegoLearning.WinUI
         /// </summary>
         public App()
         {
+            //UnhandledException += OnUnhandledException;
             this.InitializeComponent();
+            //Application.DispatcherUnhandledException += (sender, args) => this.logger.Error(args.Exception.Message);
+            //UnhandledException += (sender, e) => e.Handled = true;
+            App.Current.UnhandledException += OnUnhandledException;
         }
 
+        void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            ErrosLog.EscreverErroEmLog(e.Exception);
+            e.Handled = true;
+        }
+
+        //private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        //{
+        //    MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //    e.Handled = true;
+        //}
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
