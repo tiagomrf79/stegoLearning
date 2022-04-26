@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
-using stegoLearning.WinUI.views;
+using stegoLearning.WinUI.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +21,8 @@ namespace stegoLearning.WinUI
         // List of ValueTuple holding the Navigation Tag and the relative Navigation Page
         private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
         {
-            ("steg", typeof(StegPage)),
-            ("unsteg", typeof(UnstegPage))
+            ("steg", typeof(EsteganografarPage)),
+            ("unsteg", typeof(DesteganografarPage))
         };
 
         public MenuWindow()
@@ -42,7 +42,7 @@ namespace stegoLearning.WinUI
 
             // NavView doesn't load any page by default, so load home page.
             NavView.SelectedItem = NavView.MenuItems[0];
-            // If navigation occurs on SelectionChanged, this isn't needed.
+
             // Because we use ItemInvoked to navigate, we need to call Navigate
             // here to load the home page.
             NavView_Navigate("steg", new EntranceNavigationTransitionInfo());
@@ -100,11 +100,11 @@ namespace stegoLearning.WinUI
                 string tag = ((NavigationViewItem)NavView.SelectedItem).Tag.ToString();
                 if (tag == "steg")
                 {
-                    (ContentFrame.Content as StegPage).AjustarTamanhoImagem(e.NewSize.Width);
+                    (ContentFrame.Content as EsteganografarPage).AjustarTamanhoImagem(e.NewSize.Width);
                 }
                 else if (tag == "unsteg")
                 {
-                    (ContentFrame.Content as UnstegPage).AjustarTamanhoImagem(e.NewSize.Width);
+                    (ContentFrame.Content as DesteganografarPage).AjustarTamanhoImagem(e.NewSize.Width);
                 }
             }
         }

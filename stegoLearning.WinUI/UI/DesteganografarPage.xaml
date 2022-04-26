@@ -1,9 +1,8 @@
 ﻿<Page
-    x:Class="stegoLearning.WinUI.views.UnstegPage"
+    x:Class="stegoLearning.WinUI.UI.DesteganografarPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:stegoLearning.WinUI.views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -26,7 +25,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Image Grid.Row="0" Margin="10" x:Name="imgStego" HorizontalAlignment="Left"/>
+            <Border Grid.Row="0" Margin="10" HorizontalAlignment="Left" Background="White">
+                <Image x:Name="imgStego" Width="400" MinHeight="100"/>
+            </Border>
             <Button Grid.Row="1" x:Name="btnAbrir" Content="Abrir imagem" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAbrir_Click"/>
         </Grid>
 
@@ -39,7 +40,7 @@
             </Grid.RowDefinitions>
 
             <TextBox x:Name="txtPassword" Grid.Row="0" Header="Palavra-passe" Margin="10" TextWrapping="Wrap" MaxHeight="78"/>
-            <Button x:Name="btnUnsteg" Grid.Row="1" Content="Desteganografar" Margin="10" HorizontalAlignment="Center" Click="btnUnsteg_Click"/>
+            <Button x:Name="btnUnsteg" Grid.Row="1" IsEnabled="False" Content="Desteganografar" Margin="10" HorizontalAlignment="Center" Click="btnUnsteg_Click"/>
             <TextBox x:Name="txtMensagem" Grid.Row="2" IsReadOnly="True" Header="Mensagem revelada" TextWrapping="Wrap" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
         </Grid>
 
