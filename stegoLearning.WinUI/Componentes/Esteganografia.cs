@@ -1,11 +1,10 @@
 ﻿using Microsoft.UI.Xaml.Media.Imaging;
-using stegoLearning.WinUI.comum;
 using System;
 using System.Collections;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 
-namespace stegoLearning.WinUI
+namespace stegoLearning.WinUI.Componentes
 {
     public static class Esteganografia
     {
@@ -61,8 +60,7 @@ namespace stegoLearning.WinUI
             //abortar caso a mensagem não caiba na imagem
             if (numPixeisMensagem + numPixeisFim > numPixeisTotal)
             {
-                throw new ArgumentOutOfRangeException(null, "A imagem escolhida não permite guardar toda a mensagem." +
-                    " Escolha uma mensagem mais curta, aumente o n.º de bits utilizados ou escolha uma imagem de maiores dimensões.");
+                throw new ArgumentOutOfRangeException("numPixeisTotal", numPixeisTotal, $"A resolução da imagem ({numPixeisTotal} pixeís) é insuficiente para a mensagem escolhida ({numPixeisMensagem + numPixeisFim} pixeís).");
             }
 
             //obter pixéis da imagem que serão alterados com a respetiva sequência binária
@@ -116,7 +114,7 @@ namespace stegoLearning.WinUI
             BitArray bitsFim = LerBitsComponentes(pixeisFim, 1, numBitsFim);
 
             //converter a sequência binária nas variáveis que necessitamos para processar pixeis com a mensagem
-            byte[] dadosFim = SequenciaBinaria.SequenciaBinariaParaBytes(bitsFim, numBytesFim);
+            byte[] dadosFim = SequenciaBinaria.SequenciaBinariaParaBytes(bitsFim);
             short bitsAlteradosPorComponente;
             int numBytesMensagem;
             (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoFinal(dadosFim);
@@ -150,7 +148,7 @@ namespace stegoLearning.WinUI
             BitArray bitsMensagem = LerBitsComponentes(pixeisMensagem, bitsAlteradosPorComponente, numBitsMensagem);
 
             //converter a sequência binária em bytes
-            byte[] dadosMensagem = SequenciaBinaria.SequenciaBinariaParaBytes(bitsMensagem, numBytesMensagem);
+            byte[] dadosMensagem = SequenciaBinaria.SequenciaBinariaParaBytes(bitsMensagem);
 
             #endregion
 
@@ -188,7 +186,8 @@ namespace stegoLearning.WinUI
                     }
 
                     //gravar alterações no componente atual
-                    pixeis[i][j] = SequenciaBinaria.SequenciaBinariaParaBytes(bitsComponente);
+                    byte[] aux = SequenciaBinaria.SequenciaBinariaParaBytes(bitsComponente);
+                    pixeis[i][j] = aux[0];
                 }
             }
             return pixeis;

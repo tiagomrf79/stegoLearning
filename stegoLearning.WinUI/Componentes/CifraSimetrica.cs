@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace stegoLearning.WinUI
+namespace stegoLearning.WinUI.Componentes
 {
     internal static class CifraSimetrica
     {

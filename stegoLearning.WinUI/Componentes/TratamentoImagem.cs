@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 
-namespace stegoLearning.WinUI
+namespace stegoLearning.WinUI.Componentes
 {
     public static class TratamentoImagem
     {

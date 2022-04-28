@@ -1,17 +1,14 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using stegoLearning.WinUI.comum;
+using stegoLearning.WinUI.Componentes;
 using System;
+using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
 
 namespace stegoLearning.WinUI.UI
 {
@@ -32,21 +29,36 @@ namespace stegoLearning.WinUI.UI
 
             WinRT.Interop.InitializeWithWindow.Initialize(fileOpenPicker, App.appWindowHandle);
 
-            StorageFile storageFile = await fileOpenPicker.PickSingleFileAsync();
+            StorageFile storageFile = null;
+            WriteableBitmap writeableBitmap = null;
 
-            //só se escolher ficheiro é que cria uma nova imagem
-            WriteableBitmap writeableBitmap = null; 
-            if (storageFile != null)
+            try
             {
-                try
+                storageFile = await fileOpenPicker.PickSingleFileAsync();
+                if (storageFile != null)
                 {
                     writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
                 }
-                catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
-                {
-                    txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
-                    return;
-                }
+            }
+            catch (FileNotFoundException) //não encontrou o ficheiro
+            {
+                txtErros.Text = "Não foi possível encontrar o ficheiro seleccionado.";
+                return;
+            }
+            catch (UnauthorizedAccessException) //não tem permissões para abrir o ficheiro
+            {
+                txtErros.Text = "Não tem permissões para abrir o ficheiro seleccionado. Contacte o seu administrador.";
+                return;
+            }
+            catch (EndOfStreamException) //algum problema com a stream de leitura de ficheiro ou de criação da imagem
+            {
+                txtErros.Text = "Não foi possível abrir o ficheiro. Certifique-se que seleccionou um ficheiro válido.";
+                return;
+            }
+            catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
+            {
+                txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
+                return;
             }
 
             //só se a conversão correr bem é que atualiza a imagem na UI

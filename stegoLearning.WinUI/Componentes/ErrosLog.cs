@@ -2,7 +2,7 @@
 using System.IO;
 using Windows.Storage;
 
-namespace stegoLearning.WinUI.comum
+namespace stegoLearning.WinUI.Componentes
 {
     internal static class ErrosLog
     {

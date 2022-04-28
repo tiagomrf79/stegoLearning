@@ -7,7 +7,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace stegoLearning.WinUI.comum
+namespace stegoLearning.WinUI.Componentes
 {
     internal class ImagemIO
     {

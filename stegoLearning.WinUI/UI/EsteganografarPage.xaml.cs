@@ -1,18 +1,15 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using stegoLearning.WinUI.comum;
+using stegoLearning.WinUI.Componentes;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
 
 namespace stegoLearning.WinUI.UI
 {
@@ -27,6 +24,7 @@ namespace stegoLearning.WinUI.UI
         {
             FileOpenPicker fileOpenPicker = new FileOpenPicker();
             fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
             fileOpenPicker.ViewMode = PickerViewMode.Thumbnail;
             fileOpenPicker.FileTypeFilter.Add(".png");
             fileOpenPicker.FileTypeFilter.Add(".jpeg");
@@ -36,21 +34,35 @@ namespace stegoLearning.WinUI.UI
 
             WinRT.Interop.InitializeWithWindow.Initialize(fileOpenPicker, App.appWindowHandle);
 
-            StorageFile storageFile = await fileOpenPicker.PickSingleFileAsync();
-
-            //só se escolher ficheiro é que cria uma nova imagem
+            StorageFile storageFile = null;
             WriteableBitmap writeableBitmap = null;
-            if (storageFile != null)
+            try
             {
-                try
+                storageFile = await fileOpenPicker.PickSingleFileAsync();
+                if (storageFile != null)
                 {
                     writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
                 }
-                catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
-                {
-                    txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
-                    return;
-                }
+            }
+            catch (FileNotFoundException) //não encontrou o ficheiro
+            {
+                txtErros.Text = "Não foi possível encontrar o ficheiro seleccionado.";
+                return;
+            }
+            catch (UnauthorizedAccessException) //não tem permissões para abrir o ficheiro
+            {
+                txtErros.Text = "Não tem permissões para abrir o ficheiro seleccionado. Contacte o seu administrador.";
+                return;
+            }
+            catch (EndOfStreamException) //algum problema com a stream de leitura de ficheiro ou de criação da imagem
+            {
+                txtErros.Text = "Não foi possível abrir o ficheiro. Certifique-se que seleccionou um ficheiro válido.";
+                return;
+            }
+            catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
+            {
+                txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
+                return;
             }
 
             //só se a conversão correr bem é que atualiza a UI
@@ -92,13 +104,29 @@ namespace stegoLearning.WinUI.UI
 
             WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, App.appWindowHandle);
 
-            StorageFile storageFile = await fileSavePicker.PickSaveFileAsync();
-
-            //só se não cancelar é que cria um novo ficheiro
-            if (storageFile != null)
+            try
             {
-                await ImagemIO.GravarBitmapEmFicheiro((WriteableBitmap)imgStego.Source, storageFile, formatoImagemId);
-                txtErros.Text = "Imagem guardada com sucesso!";
+                StorageFile storageFile = await fileSavePicker.PickSaveFileAsync();
+                if (storageFile != null)
+                {
+                    await ImagemIO.GravarBitmapEmFicheiro((WriteableBitmap)imgStego.Source, storageFile, formatoImagemId);
+                    txtErros.Text = "Imagem guardada com sucesso!";
+                }
+            }
+            catch (DirectoryNotFoundException) //não encontrou a pasta
+            {
+                txtErros.Text = "Não foi possível encontrar a pasta seleccionada.";
+                return;
+            }
+            catch (UnauthorizedAccessException) //não tem permissões para guardar o ficheiro
+            {
+                txtErros.Text = "Não tem permissões para guardar o ficheiro na pasta seleccionada. Contacte o seu administrador.";
+                return;
+            }
+            catch (EndOfStreamException) //algum problema com a stream de escrita do ficheiro
+            {
+                txtErros.Text = "Erro ao guardar o ficheiro.";
+                return;
             }
         }
 
