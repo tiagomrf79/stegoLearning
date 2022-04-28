@@ -118,7 +118,6 @@ namespace stegoLearning.WinUI.Componentes
                 || numBytesMensagem < 1)
             {
                 return null;
-                //throw new ArgumentOutOfRangeException(nameof(imagemStego), "Não foi possível encontrar uma mensagem esteganografada.");
             }
 
             #endregion
@@ -134,7 +133,6 @@ namespace stegoLearning.WinUI.Componentes
             if (numPixeisMensagem + numPixeisFim > numPixeisTotal)
             {
                 return null;
-                //throw new ArgumentOutOfRangeException(nameof(imagemStego), "Não foi possível encontrar uma mensagem esteganografada.");
             }
 
             //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem

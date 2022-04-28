@@ -1,5 +1,4 @@
 ﻿using Microsoft.UI.Xaml;
-using stegoLearning.WinUI.Componentes;
 using stegoLearning.WinUI.UI;
 using System;
 
@@ -20,15 +19,6 @@ namespace stegoLearning.WinUI
         public App()
         {
             this.InitializeComponent();
-            
-            //associar exceções não tratadas a um método
-            App.Current.UnhandledException += OnUnhandledException;
-        }
-
-        void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-        {
-            ErrosLog.EscreverErroEmLog(e.Exception);
-            e.Handled = true;
         }
 
         /// <summary>
@@ -43,6 +33,7 @@ namespace stegoLearning.WinUI
             appWindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(appWindow);
         }
 
+        //é necessária window handle para abrir caixas de diálogo para abrir e guardar ficheiros
         public static MenuWindow appWindow { get; private set; }
         public static IntPtr appWindowHandle { get; private set; }
     }

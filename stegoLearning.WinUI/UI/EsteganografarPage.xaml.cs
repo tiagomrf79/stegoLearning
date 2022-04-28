@@ -195,6 +195,10 @@ namespace stegoLearning.WinUI.UI
             btnGuardar.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Ajusta o tamanho do controlo da imagem consoante o tamanho da janela da aplicação
+        /// </summary>
+        /// <param name="novaLargura"></param>
         public void AjustarTamanhoImagem(double novaLargura = 0)
         {
             //se não receber parâmetro da novaLargura, obter largura atual

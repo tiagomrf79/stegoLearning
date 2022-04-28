@@ -6,6 +6,10 @@ namespace stegoLearning.WinUI.Componentes
 {
     internal static class ErrosLog
     {
+        /// <summary>
+        /// Escreve os erros não previstos num log.
+        /// </summary>
+        /// <param name="exception"></param>
         public static void EscreverErroEmLog(Exception exception)
         {
             StorageFolder storageFolder = ApplicationData.Current.LocalFolder;

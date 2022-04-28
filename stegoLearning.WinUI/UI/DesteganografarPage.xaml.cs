@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using stegoLearning.WinUI.Componentes;
 using System;
-using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -109,7 +108,7 @@ namespace stegoLearning.WinUI.UI
                 }
                 catch (CryptographicException)
                 {
-                    txtErros.Text = "A desencriptação falhou.";
+                    txtErros.Text = "A desencriptação falhou. Certifique-se que colocou a palavra-passe correta.";
                     return;
                 }
                 catch (Exception exception)
@@ -121,9 +120,22 @@ namespace stegoLearning.WinUI.UI
 
             }
 
+            //se o primeiro byte tiver o valor 0 (o que é possivel se mostrar dados encriptados)
+            //a caixa de texto pensa que é o fim da cadeia de texto e não mostra nada
+            //e por esse motivo aparenta que nenhuma operação foi efetuada
+            //então vou alterar esse zero para espaço
+            if (dados[0] == 0)
+            {
+                dados[0] = 20;
+            }
+
             txtMensagem.Text = Encoding.UTF8.GetString(dados);
         }
 
+        /// <summary>
+        /// Ajusta o tamanho do controlo da imagem consoante o tamanho da janela da aplicação
+        /// </summary>
+        /// <param name="novaLargura"></param>
         public void AjustarTamanhoImagem(double novaLargura = 0)
         {
             //se não receber parâmetro da novaLargura, obter largura atual
