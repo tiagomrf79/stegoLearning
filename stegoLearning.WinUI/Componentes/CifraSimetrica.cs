@@ -54,9 +54,6 @@ namespace stegoLearning.WinUI.Componentes
         /// <exception cref="ArgumentException"></exception>
         public static byte[] EncriptarMensagem(string mensagemOriginal, string palavraPasse)
         {
-            if (string.IsNullOrEmpty(palavraPasse)) throw new ArgumentException("palavraPasse");
-            if (string.IsNullOrEmpty(mensagemOriginal)) throw new ArgumentException("mensagemOriginal");
-
             byte[] mensagemParaEncriptar = Encoding.UTF8.GetBytes(mensagemOriginal);
 
             using (var aes = Aes.Create())
@@ -94,9 +91,6 @@ namespace stegoLearning.WinUI.Componentes
         /// <exception cref="ArgumentException"></exception>
         public static byte[] DesencriptarDados(byte[] dadosEncriptados, string palavraPasse)
         {
-            if (dadosEncriptados == null || dadosEncriptados.Length == 0) throw new ArgumentException("dadosEncriptados");
-            if (string.IsNullOrEmpty(palavraPasse)) throw new ArgumentException("palavraPasse");
-
             using (var aes = Aes.Create())
             {
                 byte[] salt = dadosEncriptados.Take(TamanhoSalt).ToArray();
@@ -110,24 +104,13 @@ namespace stegoLearning.WinUI.Componentes
 
                 using (var memoryStream = new MemoryStream())
                 {
-                    try
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        //var cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
-                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
-                        {
-                            cryptoStream.Write(mensagemEncriptada, 0, mensagemEncriptada.Length);
-                            cryptoStream.FlushFinalBlock();
-                        }
-
-                        var mensagemDesencriptada = memoryStream.ToArray();
-                        return mensagemDesencriptada;
+                        cryptoStream.Write(mensagemEncriptada, 0, mensagemEncriptada.Length);
+                        cryptoStream.FlushFinalBlock();
                     }
-                    catch (Exception)
-                    {
-                        //se falhar a desencriptação (p.ex. chave errada)
-                        //retornar null e mostrar erro
-                        return Encoding.UTF8.GetBytes("Desencriptação falhou!");
-                    }
+                    var mensagemDesencriptada = memoryStream.ToArray();
+                    return mensagemDesencriptada;
                 }
             }
         }

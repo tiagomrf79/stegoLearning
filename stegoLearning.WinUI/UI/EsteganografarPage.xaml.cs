@@ -22,6 +22,8 @@ namespace stegoLearning.WinUI.UI
 
         private async void btnAbrir_Click(object sender, RoutedEventArgs e)
         {
+            txtErros.Text = "";
+
             FileOpenPicker fileOpenPicker = new FileOpenPicker();
             fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
             fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
@@ -44,24 +46,20 @@ namespace stegoLearning.WinUI.UI
                     writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
                 }
             }
-            catch (FileNotFoundException) //não encontrou o ficheiro
-            {
-                txtErros.Text = "Não foi possível encontrar o ficheiro seleccionado.";
-                return;
-            }
-            catch (UnauthorizedAccessException) //não tem permissões para abrir o ficheiro
-            {
-                txtErros.Text = "Não tem permissões para abrir o ficheiro seleccionado. Contacte o seu administrador.";
-                return;
-            }
-            catch (EndOfStreamException) //algum problema com a stream de leitura de ficheiro ou de criação da imagem
-            {
-                txtErros.Text = "Não foi possível abrir o ficheiro. Certifique-se que seleccionou um ficheiro válido.";
-                return;
-            }
             catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
             {
                 txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
+                return;
+            }
+            catch (IOException) //não tem acesso ou não encontrou o ficheiro, etc
+            {
+                txtErros.Text = "Não foi possível abrir o ficheiro seleccionado.";
+                return;
+            }
+            catch (Exception ex)
+            {
+                txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
+                ErrosLog.EscreverErroEmLog(ex);
                 return;
             }
 
@@ -78,6 +76,8 @@ namespace stegoLearning.WinUI.UI
 
         private async void btnGuardar_Click(object sender, RoutedEventArgs e)
         {
+            txtErros.Text = "";
+
             if (imgStego.Source == null)
             {
                 txtErros.Text = "Não foi encontrada uma imagem esteganografada para guardar. " +
@@ -113,25 +113,23 @@ namespace stegoLearning.WinUI.UI
                     txtErros.Text = "Imagem guardada com sucesso!";
                 }
             }
-            catch (DirectoryNotFoundException) //não encontrou a pasta
+            catch (IOException) //não tem acesso ou não encontrou o ficheiro, etc
             {
-                txtErros.Text = "Não foi possível encontrar a pasta seleccionada.";
+                txtErros.Text = "Não foi possível abrir o ficheiro seleccionado.";
                 return;
             }
-            catch (UnauthorizedAccessException) //não tem permissões para guardar o ficheiro
+            catch (Exception ex)
             {
-                txtErros.Text = "Não tem permissões para guardar o ficheiro na pasta seleccionada. Contacte o seu administrador.";
-                return;
-            }
-            catch (EndOfStreamException) //algum problema com a stream de escrita do ficheiro
-            {
-                txtErros.Text = "Erro ao guardar o ficheiro.";
+                txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
+                ErrosLog.EscreverErroEmLog(ex);
                 return;
             }
         }
 
         private void btnSteg_Click(object sender, RoutedEventArgs e)
         {
+            txtErros.Text = "";
+
             if (string.IsNullOrEmpty(txtMensagem.Text))
             {
                 txtErros.Text = "Por favor preencha o campo com a mensagem que pretende esteganografar.";
@@ -159,30 +157,42 @@ namespace stegoLearning.WinUI.UI
             string password = txtPassword.Text;
             if (password.Length > 0)
             {
-                ///////////////////////////////////////////////////////////////////////////////////////
                 try
                 {
                     bytesMensagem = CifraSimetrica.EncriptarMensagem(mensagem, password);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //informar que houve um problema a encriptar a mensagem com a password
+                    txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
+                    ErrosLog.EscreverErroEmLog(ex);
                     return;
                 }
             }
 
-            WriteableBitmap writableBitmap = (WriteableBitmap)imgOriginal.Source;
-            ///////////////////////////////////////////////////////////////////////////////////////
-            try
+            WriteableBitmap writeableBitmap = (WriteableBitmap)imgOriginal.Source;
+
+            //validar tamanho da mensagem e da imagem
+            int numPixeisMensagem = Esteganografia.CalcularPixeisUtilizados(bytesMensagem.Length * 8, numeroBits);
+            int numPixeisAux = (sizeof(int) + sizeof(short)) * 8;
+            int numPixeisImagem = writeableBitmap.PixelWidth * writeableBitmap.PixelHeight;
+            if (numPixeisMensagem + numPixeisAux > numPixeisImagem)
             {
-                imgStego.Source = Esteganografia.EsteganografarImagem(writableBitmap, bytesMensagem, numeroBits);
-                btnGuardar.IsEnabled = true;
-            }
-            catch (ArgumentOutOfRangeException exception)
-            {
-                txtErros.Text = exception.Message;
+                txtErros.Text = $"A resolução da imagem ({numPixeisImagem} pixeís) é insuficiente para a mensagem escolhida ({numPixeisMensagem + numPixeisAux} pixeís). Escolha uma imagem com maior resolução ou uma mensagem mais curta.";
                 return;
             }
+
+            try
+            {
+                imgStego.Source = Esteganografia.EsteganografarImagem(writeableBitmap, bytesMensagem, numeroBits);
+            }
+            catch (Exception ex)
+            {
+                txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
+                ErrosLog.EscreverErroEmLog(ex);
+                return;
+            }
+
+            btnGuardar.IsEnabled = true;
         }
 
         public void AjustarTamanhoImagem(double novaLargura = 0)

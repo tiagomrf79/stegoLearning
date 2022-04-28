@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -21,6 +22,8 @@ namespace stegoLearning.WinUI.UI
 
         private async void btnAbrir_Click(object sender, RoutedEventArgs e)
         {
+            txtErros.Text = "";
+
             FileOpenPicker fileOpenPicker = new FileOpenPicker();
             fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
             fileOpenPicker.ViewMode = PickerViewMode.Thumbnail;
@@ -40,24 +43,20 @@ namespace stegoLearning.WinUI.UI
                     writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
                 }
             }
-            catch (FileNotFoundException) //não encontrou o ficheiro
-            {
-                txtErros.Text = "Não foi possível encontrar o ficheiro seleccionado.";
-                return;
-            }
-            catch (UnauthorizedAccessException) //não tem permissões para abrir o ficheiro
-            {
-                txtErros.Text = "Não tem permissões para abrir o ficheiro seleccionado. Contacte o seu administrador.";
-                return;
-            }
-            catch (EndOfStreamException) //algum problema com a stream de leitura de ficheiro ou de criação da imagem
-            {
-                txtErros.Text = "Não foi possível abrir o ficheiro. Certifique-se que seleccionou um ficheiro válido.";
-                return;
-            }
             catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
             {
                 txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
+                return;
+            }
+            catch (IOException) //não tem acesso ou não encontrou o ficheiro, etc
+            {
+                txtErros.Text = "Não foi possível abrir o ficheiro seleccionado.";
+                return;
+            }
+            catch (Exception ex)
+            {
+                txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista."; 
+                ErrosLog.EscreverErroEmLog(ex);
                 return;
             }
 
@@ -72,22 +71,31 @@ namespace stegoLearning.WinUI.UI
 
         private void btnUnsteg_Click(object sender, RoutedEventArgs e)
         {
+            txtErros.Text = "";
+
             if (imgStego.Source == null)
             {
                 txtErros.Text = "Por favor escolha uma imagem para ser desteganografada.";
                 return;
             }
 
+            txtMensagem.Text = "";
             byte[] dados;
-            ///////////////////////////////////////////////////////////////////////////////////////
+
             try
             {
                 dados = Esteganografia.DesteganografarImagem((WriteableBitmap)imgStego.Source);
             }
-            catch (ArgumentOutOfRangeException exception)
+            catch (Exception exception)
             {
-                txtErros.Text = exception.Message;
-                txtMensagem.Text = "";
+                txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
+                ErrosLog.EscreverErroEmLog(exception);
+                return;
+            }
+
+            if (dados == null || dados.Length == 0)
+            {
+                txtErros.Text = "Não foi possível encontrar uma mensagem esteganografada.";
                 return;
             }
 
@@ -95,23 +103,25 @@ namespace stegoLearning.WinUI.UI
             string password = txtPassword.Text;
             if (password.Length > 0)
             {
-                ///////////////////////////////////////////////////////////////////////////////////////
                 try
                 {
                     dados = CifraSimetrica.DesencriptarDados(dados, password);
                 }
+                catch (CryptographicException)
+                {
+                    txtErros.Text = "A desencriptação falhou.";
+                    return;
+                }
                 catch (Exception exception)
                 {
-                    //informar que a desencriptação da mensagem falhou
+                    txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
                     ErrosLog.EscreverErroEmLog(exception);
                     return;
                 }
+
             }
 
-            if (dados != null)
-            {
-                txtMensagem.Text = Encoding.UTF8.GetString(dados);
-            }
+            txtMensagem.Text = Encoding.UTF8.GetString(dados);
         }
 
         public void AjustarTamanhoImagem(double novaLargura = 0)

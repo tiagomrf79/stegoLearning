@@ -57,12 +57,6 @@ namespace stegoLearning.WinUI.Componentes
             //calcular quantos pixéis vão ser precisos para esta mensagem e bits por componente
             int numPixeisMensagem = CalcularPixeisUtilizados(bitsMensagem.Length, bitsPorComponente);
 
-            //abortar caso a mensagem não caiba na imagem
-            if (numPixeisMensagem + numPixeisFim > numPixeisTotal)
-            {
-                throw new ArgumentOutOfRangeException("numPixeisTotal", numPixeisTotal, $"A resolução da imagem ({numPixeisTotal} pixeís) é insuficiente para a mensagem escolhida ({numPixeisMensagem + numPixeisFim} pixeís).");
-            }
-
             //obter pixéis da imagem que serão alterados com a respetiva sequência binária
             byte[] bytesImagemMensagem = TratamentoImagem.ConverterImagemEmBytes(imagemOriginal, 0, numPixeisMensagem);
             byte[][] pixeisMensagem = TratamentoImagem.ConverterBytesEmPixeis(bytesImagemMensagem);
@@ -119,10 +113,12 @@ namespace stegoLearning.WinUI.Componentes
             int numBytesMensagem;
             (bitsAlteradosPorComponente, numBytesMensagem) = DecomporBlocoFinal(dadosFim);
 
+            //verificar se os parâmetros são válidos para uma imagem esteganografada
             if (bitsAlteradosPorComponente != 1 && bitsAlteradosPorComponente != 2 && bitsAlteradosPorComponente != 4
                 || numBytesMensagem < 1)
             {
-                throw new ArgumentOutOfRangeException(null, "Não foi possível encontrar uma mensagem esteganografada.");
+                return null;
+                //throw new ArgumentOutOfRangeException(nameof(imagemStego), "Não foi possível encontrar uma mensagem esteganografada.");
             }
 
             #endregion
@@ -134,10 +130,11 @@ namespace stegoLearning.WinUI.Componentes
             //calcular quantos pixeis estarão a ser utilizados pela mensagem
             int numPixeisMensagem = CalcularPixeisUtilizados(numBitsMensagem, bitsAlteradosPorComponente);
 
-            //abortar caso o tamanho da mensagem obtido exceda o permitido pela imagem
+            //verificar se o tamanho da mensagem é válido para a imagem em questão
             if (numPixeisMensagem + numPixeisFim > numPixeisTotal)
             {
-                throw new ArgumentOutOfRangeException(null, "Não foi possível encontrar uma mensagem esteganografada.");
+                return null;
+                //throw new ArgumentOutOfRangeException(nameof(imagemStego), "Não foi possível encontrar uma mensagem esteganografada.");
             }
 
             //obter os pixéis da imagem que necessitam de ser lidos para obter a mensagem
@@ -200,7 +197,7 @@ namespace stegoLearning.WinUI.Componentes
         /// <param name="bitsPorComponente"></param>
         /// <param name="totalBits"></param>
         /// <returns></returns>
-        public static BitArray LerBitsComponentes(byte[][] pixeis, short bitsPorComponente, int totalBits)
+        private static BitArray LerBitsComponentes(byte[][] pixeis, short bitsPorComponente, int totalBits)
         {
             //criar sequência binária para guardar os bits extraídos da imagem
             BitArray bitArray = new BitArray(totalBits);
@@ -235,7 +232,7 @@ namespace stegoLearning.WinUI.Componentes
         /// <param name="totalBits"></param>
         /// <param name="bitsPorComponente"></param>
         /// <returns></returns>
-        private static int CalcularPixeisUtilizados(int totalBits, int bitsPorComponente)
+        public static int CalcularPixeisUtilizados(int totalBits, int bitsPorComponente)
         {
             double numComponentesAlterados = (double)totalBits / bitsPorComponente;
             int numPixeisAlterados = (int)Math.Ceiling(numComponentesAlterados / 3); //pixéis alterados parcialmente também contam
