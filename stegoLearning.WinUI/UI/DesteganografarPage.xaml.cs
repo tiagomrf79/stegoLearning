@@ -10,80 +10,106 @@ using System.Text;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
-namespace stegoLearning.WinUI.UI
+namespace stegoLearning.WinUI.UI;
+
+public sealed partial class DesteganografarPage : Page
 {
-    public sealed partial class DesteganografarPage : Page
+    public DesteganografarPage()
     {
-        public DesteganografarPage()
+        this.InitializeComponent();
+    }
+
+    private async void btnAbrir_Click(object sender, RoutedEventArgs e)
+    {
+        txtErros.Text = "";
+
+        FileOpenPicker fileOpenPicker = new FileOpenPicker();
+        fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+        fileOpenPicker.ViewMode = PickerViewMode.Thumbnail;
+        fileOpenPicker.FileTypeFilter.Add(".png");
+        fileOpenPicker.FileTypeFilter.Add(".bmp");
+
+        WinRT.Interop.InitializeWithWindow.Initialize(fileOpenPicker, App.appWindowHandle);
+
+        StorageFile storageFile = null;
+        WriteableBitmap writeableBitmap = null;
+
+        try
         {
-            this.InitializeComponent();
-        }
-
-        private async void btnAbrir_Click(object sender, RoutedEventArgs e)
-        {
-            txtErros.Text = "";
-
-            FileOpenPicker fileOpenPicker = new FileOpenPicker();
-            fileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            fileOpenPicker.ViewMode = PickerViewMode.Thumbnail;
-            fileOpenPicker.FileTypeFilter.Add(".png");
-            fileOpenPicker.FileTypeFilter.Add(".bmp");
-
-            WinRT.Interop.InitializeWithWindow.Initialize(fileOpenPicker, App.appWindowHandle);
-
-            StorageFile storageFile = null;
-            WriteableBitmap writeableBitmap = null;
-
-            try
+            storageFile = await fileOpenPicker.PickSingleFileAsync();
+            if (storageFile != null)
             {
-                storageFile = await fileOpenPicker.PickSingleFileAsync();
-                if (storageFile != null)
-                {
-                    writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
-                }
-            }
-            catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
-            {
-                txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
-                return;
-            }
-            catch (IOException) //não tem acesso ou não encontrou o ficheiro, etc
-            {
-                txtErros.Text = "Não foi possível abrir o ficheiro seleccionado.";
-                return;
-            }
-            catch (Exception ex)
-            {
-                txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista."; 
-                ErrosLog.EscreverErroEmLog(ex);
-                return;
-            }
-
-            //só se a conversão correr bem é que atualiza a imagem na UI
-            if (writeableBitmap != null)
-            {
-                imgStego.Source = writeableBitmap;
-                AjustarTamanhoImagem();
-                btnUnsteg.IsEnabled = true;
+                writeableBitmap = await ImagemIO.ConverterFicheiroEmBitmap(storageFile);
             }
         }
-
-        private void btnUnsteg_Click(object sender, RoutedEventArgs e)
+        catch (COMException) //não reconheceu o ficheiro como imagem (code 0x88982F50)
         {
-            txtErros.Text = "";
+            txtErros.Text = "Não foi possível abrir a imagem. Certifique-se que seleccionou uma imagem válida.";
+            return;
+        }
+        catch (IOException) //não tem acesso ou não encontrou o ficheiro, etc
+        {
+            txtErros.Text = "Não foi possível abrir o ficheiro seleccionado.";
+            return;
+        }
+        catch (Exception ex)
+        {
+            txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista."; 
+            ErrosLog.EscreverErroEmLog(ex);
+            return;
+        }
 
-            if (imgStego.Source == null)
-            {
-                txtErros.Text = "Por favor escolha uma imagem para ser desteganografada.";
-                return;
-            }
+        //só se a conversão correr bem é que atualiza a imagem na UI
+        if (writeableBitmap != null)
+        {
+            imgStego.Source = writeableBitmap;
+            AjustarTamanhoImagem();
+            btnUnsteg.IsEnabled = true;
+        }
+    }
 
-            txtMensagem.Text = "";
-            byte[] dados;
+    private void btnUnsteg_Click(object sender, RoutedEventArgs e)
+    {
+        txtErros.Text = "";
 
+        if (imgStego.Source == null)
+        {
+            txtErros.Text = "Por favor escolha uma imagem para ser desteganografada.";
+            return;
+        }
+
+        txtMensagem.Text = "";
+        byte[] dados;
+
+        try
+        {
+            dados = Esteganografia.DesteganografarImagem((WriteableBitmap)imgStego.Source);
+        }
+        catch (Exception exception)
+        {
+            txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
+            ErrosLog.EscreverErroEmLog(exception);
+            return;
+        }
+
+        if (dados == null || dados.Length == 0)
+        {
+            txtErros.Text = "Não foi possível encontrar uma mensagem esteganografada.";
+            return;
+        }
+
+        //só utilizar desencriptação se colocar texto na palavra-passe
+        string password = txtPassword.Text;
+        if (password.Length > 0)
+        {
             try
             {
-                dados = Esteganografia.DesteganografarImagem((WriteableBitmap)imgStego.Source);
+                dados = CifraSimetrica.DesencriptarDados(dados, password);
+            }
+            catch (CryptographicException)
+            {
+                txtErros.Text = "A desencriptação falhou. Certifique-se que colocou a palavra-passe correta.";
+                return;
             }
             catch (Exception exception)
             {
@@ -92,66 +118,39 @@ namespace stegoLearning.WinUI.UI
                 return;
             }
 
-            if (dados == null || dados.Length == 0)
-            {
-                txtErros.Text = "Não foi possível encontrar uma mensagem esteganografada.";
-                return;
-            }
-
-            //só utilizar desencriptação se colocar texto na palavra-passe
-            string password = txtPassword.Text;
-            if (password.Length > 0)
-            {
-                try
-                {
-                    dados = CifraSimetrica.DesencriptarDados(dados, password);
-                }
-                catch (CryptographicException)
-                {
-                    txtErros.Text = "A desencriptação falhou. Certifique-se que colocou a palavra-passe correta.";
-                    return;
-                }
-                catch (Exception exception)
-                {
-                    txtErros.Text = "Ocorreu um erro e a operação terminou inesperadamente. Tente novamente e reinicie a aplicação caso o erro persista.";
-                    ErrosLog.EscreverErroEmLog(exception);
-                    return;
-                }
-
-            }
-
-            //se o primeiro byte tiver o valor 0 (o que é possivel se mostrar dados encriptados)
-            //a caixa de texto pensa que é o fim da cadeia de texto e não mostra nada
-            //e por esse motivo aparenta que nenhuma operação foi efetuada
-            //então vou alterar esse zero para espaço
-            if (dados[0] == 0)
-            {
-                dados[0] = 20;
-            }
-
-            txtMensagem.Text = Encoding.UTF8.GetString(dados);
         }
 
-        /// <summary>
-        /// Ajusta o tamanho do controlo da imagem consoante o tamanho da janela da aplicação
-        /// </summary>
-        /// <param name="novaLargura"></param>
-        public void AjustarTamanhoImagem(double novaLargura = 0)
+        //se o primeiro byte tiver o valor 0 (o que é possivel se mostrar dados encriptados)
+        //a caixa de texto pensa que é o fim da cadeia de texto e não mostra nada
+        //e por esse motivo aparenta que nenhuma operação foi efetuada
+        //então vou alterar esse zero para espaço
+        if (dados[0] == 0)
         {
-            //se não receber parâmetro da novaLargura, obter largura atual
-            if (novaLargura == 0)
-            {
-                novaLargura = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth;
-            }
-
-            //a imagem deve ter, pelo menos, a mesma largura dos botões da outra coluna
-            double minLargura = btnAbrir.ActualWidth + 20;
-
-            //a imagem deve ter, no máximo, cerca de metade do espaço do formulário
-            double maxLargura = novaLargura * 0.45;
-
-            double largura = Math.Max(minLargura, maxLargura);
-            imgStego.Width = largura;
+            dados[0] = 20;
         }
+
+        txtMensagem.Text = Encoding.UTF8.GetString(dados);
+    }
+
+    /// <summary>
+    /// Ajusta o tamanho do controlo da imagem consoante o tamanho da janela da aplicação
+    /// </summary>
+    /// <param name="novaLargura"></param>
+    public void AjustarTamanhoImagem(double novaLargura = 0)
+    {
+        //se não receber parâmetro da novaLargura, obter largura atual
+        if (novaLargura == 0)
+        {
+            novaLargura = ((ScrollViewer)((Frame)this.Parent).Parent).ActualWidth;
+        }
+
+        //a imagem deve ter, pelo menos, a mesma largura dos botões da outra coluna
+        double minLargura = btnAbrir.ActualWidth + 20;
+
+        //a imagem deve ter, no máximo, cerca de metade do espaço do formulário
+        double maxLargura = novaLargura * 0.45;
+
+        double largura = Math.Max(minLargura, maxLargura);
+        imgStego.Width = largura;
     }
 }

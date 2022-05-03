@@ -4,115 +4,103 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace stegoLearning.WinUI.Componentes
+namespace stegoLearning.WinUI.Componentes;
+
+internal static class CifraSimetrica
 {
-    internal static class CifraSimetrica
+    //tamanho em bytes
+    private const int TamanhoChave = 32; // 256 bits
+    private const int TamanhoSalt = 32; // 256 bits
+    private const int TamanhoIV = 16; // 128 bits
+
+    /// <summary>
+    /// Encripta uma mensagem de texto usando a palavra-passe fornecida, retornando um array de bytes que inclui o salt e o IV para o processo inverso ser possível.
+    /// </summary>
+    /// <param name="mensagemOriginal"></param>
+    /// <param name="palavraPasse"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static byte[] EncriptarMensagem(string mensagemOriginal, string palavraPasse)
     {
-        //tamanho em bytes
-        private const int TamanhoChave = 32; // 256 bits
-        private const int TamanhoSalt = 32; // 256 bits
-        private const int TamanhoIV = 16; // 128 bits
+        byte[] mensagemParaEncriptar = Encoding.UTF8.GetBytes(mensagemOriginal);
 
-        /// <summary>
-        /// Gera um array de bytes aleatórios com o tamanho pretendido.
-        /// </summary>
-        /// <param name="tamanho"></param>
-        /// <returns></returns>
-        private static byte[] GerarNumeroAleatorio(int tamanho)
+        using (var aes = Aes.Create())
         {
-            using (var randomNumberGenerator = RandomNumberGenerator.Create())
-            {
-                byte[] numeroAleatorio = new byte[tamanho];
-                randomNumberGenerator.GetBytes(numeroAleatorio);
+            //gerar salt e iv aleatórios
+            byte[] salt = GerarNumeroAleatorio(TamanhoSalt);
+            byte[] iv = GerarNumeroAleatorio(TamanhoIV);
 
-                return numeroAleatorio;
-            }
+            //derivar a chave para ter 256 bits aleatórios
+            byte[] chave = DerivarChave(palavraPasse, salt, 100000, TamanhoChave);
+            aes.Key = chave;
+
+            //encriptar mensagem
+            byte[] mensagemEncriptada = aes.EncryptCbc(mensagemParaEncriptar, iv);
+
+            //juntar mensagem, salt e iv
+            byte[] dadosEncriptados = salt;
+            dadosEncriptados = dadosEncriptados.Concat(iv).ToArray();
+            dadosEncriptados = dadosEncriptados.Concat(mensagemEncriptada).ToArray();
+
+            return dadosEncriptados;
         }
+    }
 
-        /// <summary>
-        /// Transforma a palavra-passe escolhida num array de bytes com o tamanho pretendido, derivando a mesma várias vezes.
-        /// </summary>
-        /// <param name="palavraPasse"></param>
-        /// <param name="salt"></param>
-        /// <param name="numIteracoes"></param>
-        /// <param name="tamanho"></param>
-        /// <returns></returns>
-        private static byte[] DerivarChave(string palavraPasse, byte[] salt, int numIteracoes, int tamanho)
+    /// <summary>
+    /// Desencripta um array de bytes que inclui a mensagem encriptada, a partir da palavra-passe fornecida.
+    /// </summary>
+    /// <param name="dadosEncriptados"></param>
+    /// <param name="palavraPasse"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// 
+    public static byte[] DesencriptarDados(byte[] dadosEncriptados, string palavraPasse)
+    {
+        using (var aes = Aes.Create())
         {
-            using (var rfc2898 = new Rfc2898DeriveBytes(palavraPasse, salt, numIteracoes))
-            {
-                return rfc2898.GetBytes(tamanho);
-            }
+            //separar mensagem, salt e iv
+            byte[] salt = dadosEncriptados.Take(TamanhoSalt).ToArray();
+            byte[] iv = dadosEncriptados.Skip(TamanhoSalt).Take(TamanhoIV).ToArray();
+            byte[] mensagemEncriptada = dadosEncriptados.Skip(TamanhoSalt + TamanhoIV).ToArray();
+
+            //derivar a chave com o mesmo salt para obter os mesmos 256 bits aleatórios da encriptação
+            byte[] chave = DerivarChave(palavraPasse, salt, 100000, TamanhoChave);
+            aes.Key = chave;
+
+            //desencriptar mensagem
+            byte[] mensagemDesencriptada = aes.DecryptCbc(mensagemEncriptada, iv);
+
+            return mensagemDesencriptada;
         }
-
-        /// <summary>
-        /// Encripta uma mensagem de texto usando a palavra-passe fornecida, retornando um array de bytes que inclui o salt e o IV para o processo inverso ser possível.
-        /// </summary>
-        /// <param name="mensagemOriginal"></param>
-        /// <param name="palavraPasse"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static byte[] EncriptarMensagem(string mensagemOriginal, string palavraPasse)
+    }    /// <summary>
+         /// Gera um array de bytes aleatórios com o tamanho pretendido.
+         /// </summary>
+         /// <param name="tamanho"></param>
+         /// <returns></returns>
+    private static byte[] GerarNumeroAleatorio(int tamanho)
+    {
+        using (var randomNumberGenerator = RandomNumberGenerator.Create())
         {
-            byte[] mensagemParaEncriptar = Encoding.UTF8.GetBytes(mensagemOriginal);
+            byte[] numeroAleatorio = new byte[tamanho];
+            randomNumberGenerator.GetBytes(numeroAleatorio);
 
-            using (var aes = Aes.Create())
-            {
-                byte[] salt = GerarNumeroAleatorio(TamanhoSalt);
-                byte[] chave = DerivarChave(palavraPasse, salt, 100000, TamanhoChave);
-                byte[] iv = GerarNumeroAleatorio(TamanhoIV);
-
-                aes.Key = chave;
-                aes.IV = iv;
-
-                using (var memoryStream = new MemoryStream())
-                {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        cryptoStream.Write(mensagemParaEncriptar, 0, mensagemParaEncriptar.Length);
-                        cryptoStream.FlushFinalBlock();
-                    }
-
-                    var dadosEncriptados = salt;
-                    dadosEncriptados = dadosEncriptados.Concat(iv).ToArray();
-                    dadosEncriptados = dadosEncriptados.Concat(memoryStream.ToArray()).ToArray();
-
-                    return dadosEncriptados;
-                }
-            }
+            return numeroAleatorio;
         }
+    }
 
-        /// <summary>
-        /// Desencripta um array de bytes que inclui a mensagem encriptada, a partir da palavra-passe fornecida.
-        /// </summary>
-        /// <param name="dadosEncriptados"></param>
-        /// <param name="palavraPasse"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static byte[] DesencriptarDados(byte[] dadosEncriptados, string palavraPasse)
+    /// <summary>
+    /// Transforma a palavra-passe escolhida num array de bytes com o tamanho pretendido, derivando a mesma várias vezes.
+    /// </summary>
+    /// <param name="palavraPasse"></param>
+    /// <param name="salt"></param>
+    /// <param name="numIteracoes"></param>
+    /// <param name="tamanho"></param>
+    /// <returns></returns>
+    private static byte[] DerivarChave(string palavraPasse, byte[] salt, int numIteracoes, int tamanho)
+    {
+        using (var rfc2898 = new Rfc2898DeriveBytes(palavraPasse, salt, numIteracoes, HashAlgorithmName.SHA256))
         {
-            using (var aes = Aes.Create())
-            {
-                byte[] salt = dadosEncriptados.Take(TamanhoSalt).ToArray();
-                byte[] iv = dadosEncriptados.Skip(TamanhoSalt).Take(TamanhoIV).ToArray();
-                byte[] mensagemEncriptada = dadosEncriptados.Skip(TamanhoSalt + TamanhoIV).ToArray();
-
-                byte[] chave = DerivarChave(palavraPasse, salt, 100000, TamanhoChave);
-
-                aes.Key = chave;
-                aes.IV = iv;
-
-                using (var memoryStream = new MemoryStream())
-                {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
-                    {
-                        cryptoStream.Write(mensagemEncriptada, 0, mensagemEncriptada.Length);
-                        cryptoStream.FlushFinalBlock();
-                    }
-                    var mensagemDesencriptada = memoryStream.ToArray();
-                    return mensagemDesencriptada;
-                }
-            }
+            return rfc2898.GetBytes(tamanho);
         }
     }
 }
