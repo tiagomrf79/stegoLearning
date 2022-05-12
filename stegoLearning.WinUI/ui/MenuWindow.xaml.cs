@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
+using stegoLearning.WinUI.ui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,8 @@ public sealed partial class MenuWindow : Window
     private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
     {
         ("steg", typeof(EsteganografarPage)),
-        ("unsteg", typeof(DesteganografarPage))
+        ("unsteg", typeof(DesteganografarPage)),
+        ("exemplos", typeof(DetalhadoPage))
     };
 
     public MenuWindow()
@@ -36,14 +38,11 @@ public sealed partial class MenuWindow : Window
 
     private void NavView_Loaded(object sender, RoutedEventArgs e)
     {
-        // Add handler for ContentFrame navigation.
+        //associar método a executar quando evento Navigated ocorre
         ContentFrame.Navigated += On_Navigated;
 
-        // NavView doesn't load any page by default, so load home page.
+        //carregar a página de esteganografia por defeito
         NavView.SelectedItem = NavView.MenuItems[0];
-
-        // Because we use ItemInvoked to navigate, we need to call Navigate
-        // here to load the home page.
         NavView_Navigate("steg", new EntranceNavigationTransitionInfo());
     }
 

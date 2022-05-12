@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="teste.xaml" />
     <None Remove="UI\DesteganografarPage.xaml" />
+    <None Remove="ui\DetalhadoPage.xaml" />
     <None Remove="UI\EsteganografarPage.xaml" />
   </ItemGroup>
 
@@ -39,6 +40,11 @@
        package has not yet been restored -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="ui\DetalhadoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="views\UnstegView.xaml">

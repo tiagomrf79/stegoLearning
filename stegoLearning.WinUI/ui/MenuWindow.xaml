@@ -26,11 +26,11 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItemSeparator/>
-                <!--<NavigationViewItem Tag="exemplos"  Content="Ver exemplos">
+                <NavigationViewItem Tag="exemplos"  Content="Ver exemplos">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF168;"/>
                     </NavigationViewItem.Icon>
-                </NavigationViewItem>-->
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem Tag="exit" Content="Sair" Icon="ClosePane"/>
