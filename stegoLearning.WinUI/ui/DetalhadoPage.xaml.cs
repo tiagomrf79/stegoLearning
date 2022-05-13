@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -46,6 +47,10 @@ namespace stegoLearning.WinUI.ui
             Seccao seccaoD = new Seccao();
             seccaoD.mensagem = "ld!";
             listaSeccoes.Add(seccaoD);
+
+
+            string mensagem = "çHello world!";
+            Mensagem novaMensagem = new Mensagem(mensagem);
         }
     }
 }
