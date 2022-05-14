@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<exemplos>
+	<exemplo>
+		<ficheiro_original>original1.bmp</ficheiro_original>
+		<ficheiro_stego>stego1.bmp</ficheiro_stego>
+		<mensagem>çHello World!</mensagem>
+		<primeiro_pixel>0</primeiro_pixel>
+		<numero_pixeis>20</numero_pixeis>
+	</exemplo>
+	<exemplo>
+		<ficheiro_original>original1.bmp</ficheiro_original>
+		<ficheiro_stego>stego1_bmp</ficheiro_stego>
+		<mensagem>teste</mensagem>
+		<primeiro_pixel>0</primeiro_pixel>
+		<numero_pixeis>8</numero_pixeis>
+	</exemplo>
+</exemplos>

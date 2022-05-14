@@ -12,7 +12,7 @@ internal static class ErrosLog
     /// <param name="exception"></param>
     public static void EscreverErroEmLog(Exception exception)
     {
-        StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
+        StorageFolder storageFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
         string path = storageFolder.Path;
         string file = "erros_log.txt";
 

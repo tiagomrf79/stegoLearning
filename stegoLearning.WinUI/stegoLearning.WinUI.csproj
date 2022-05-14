@@ -13,10 +13,20 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
+    <Page Remove="logs\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="imagens\exemplos.xml" />
+    <None Remove="imagens\original1.bmp" />
+    <None Remove="imagens\stego1.bmp" />
     <None Remove="teste.xaml" />
     <None Remove="UI\DesteganografarPage.xaml" />
     <None Remove="ui\DetalhadoPage.xaml" />
     <None Remove="UI\EsteganografarPage.xaml" />
+    <None Remove="ui\EsteganografarUserControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +37,15 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="imagens\exemplos.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="imagens\original1.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="imagens\stego1.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -60,5 +79,8 @@
     <Page Update="views\StegView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="logs\**" />
   </ItemGroup>
 </Project>

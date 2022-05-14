@@ -1,28 +1,26 @@
 ﻿using Microsoft.UI.Xaml;
+using stegoLearning.WinUI.Componentes;
 using stegoLearning.WinUI.UI;
 using System;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
 
 namespace stegoLearning.WinUI;
 
-/// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
-/// </summary>
 public partial class App : Application
 {
-    /// <summary>
-    /// Initializes the singleton application object.  This is the first line of authored code
-    /// executed, and as such is the logical equivalent of main() or WinMain().
-    /// </summary>
+    //é necessária window handle para abrir caixas de diálogo para abrir e guardar ficheiros
+    public static MenuWindow appWindow { get; private set; }
+    public static IntPtr appWindowHandle { get; private set; }
+
     public App()
     {
         this.InitializeComponent();
+        
+        //criar event handler para excepções não tratadas
+        App.Current.UnhandledException += OnUnhandledExceptionAsync;
     }
 
-    /// <summary>
-    /// Invoked when the application is launched normally by the end user.  Other entry points
-    /// will be used such as when the application is launched to open a specific file.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         appWindow = new MenuWindow();
@@ -30,7 +28,16 @@ public partial class App : Application
         appWindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(appWindow);
     }
 
-    //é necessária window handle para abrir caixas de diálogo para abrir e guardar ficheiros
-    public static MenuWindow appWindow { get; private set; }
-    public static IntPtr appWindowHandle { get; private set; }
+    async void OnUnhandledExceptionAsync(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        //tratar todas as excepções não previstas
+        var messageDialog = new MessageDialog("Ocorreu um erro e a operação terminou inesperadamente. " +
+            "Tente novamente e reinicie ou reinstale a aplicação caso o erro persista.", "ERRO");
+        WinRT.Interop.InitializeWithWindow.Initialize(messageDialog, App.appWindowHandle);
+        await messageDialog.ShowAsync();
+
+        ErrosLog.EscreverErroEmLog(e.Exception);
+        e.Handled = true;
+    }
+
 }

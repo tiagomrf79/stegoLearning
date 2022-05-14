@@ -7,6 +7,6 @@ namespace stegoLearning.WinUI.modelos
     {
         public WriteableBitmap imagem { get; set; }
         public string mensagem { get; set; }
-        public IEnumerable<Pixel> listaPixeis { get; set; }
+        public IEnumerable<PixelOld> listaPixeis { get; set; }
     }
 }
