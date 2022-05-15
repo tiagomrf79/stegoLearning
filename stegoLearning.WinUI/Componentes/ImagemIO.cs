@@ -61,13 +61,24 @@ internal class ImagemIO
             writeableBitmap.PixelBuffer,
             BitmapPixelFormat.Bgra8,
             writeableBitmap.PixelWidth,
-            writeableBitmap.PixelHeight);
+            writeableBitmap.PixelHeight,
+            BitmapAlphaMode.Straight);
+
+
+        //se for bitmap por defeito não guarda o canal alpha (assume que é opaco = 255)
+        //EnableV5Header32bppBGRA força guardar o canal alpha
+        var bitmapProperties = new BitmapPropertySet();
+        if (encoderId == BitmapEncoder.BmpEncoderId)
+        {
+            var bitmapTypedValue = new BitmapTypedValue(true, Windows.Foundation.PropertyType.Boolean);
+            bitmapProperties.Add("EnableV5Header32bppBGRA", bitmapTypedValue);
+        }
 
         //gravar softwareBitmap no ficheiro escolhido
         using (IRandomAccessStream stream = await storageFile.OpenAsync(FileAccessMode.ReadWrite))
         {
             //converter imagem no formato escolhido
-            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(encoderId, stream);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(encoderId, stream, bitmapProperties);
 
             encoder.SetSoftwareBitmap(softwareBitmap);
             await encoder.FlushAsync();

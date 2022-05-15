@@ -37,7 +37,6 @@ public static class TratamentoImagem
         //transformar bytes da imagem em pixeis
         for (int i = 0; i < bytesImagem.Length; i += 4)
         {
-            //tenho de guardar o alpha porque no processo inverso (criar imagem a partir de pixels) preciso dele
             byte[] aux = new byte[4];
             for (int j = 0; j < 4; j++)
             {

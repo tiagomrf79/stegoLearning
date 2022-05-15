@@ -76,6 +76,8 @@ namespace stegoLearning.WinUI.modelos
         public WriteableBitmap ImagemPixel { get; }
         public int Posicao { get; }
         public List<ItemComponente> ListaComponentes { get; }
+        public ItemLetra LetraAssociada { get; set; }
+        public List<ItemBit> BitsAssociados { get; set; }
 
         public ItemPixel(byte[] pixel, int posicao)
         {
@@ -104,7 +106,6 @@ namespace stegoLearning.WinUI.modelos
 
     public class ItemComponente
     {
-        //public Color CorComponente { get; }
         public Brush CorComponente { get; }
         public string NomeComponente { get; }
         public ItemByte ByteComponente { get; }
@@ -137,7 +138,7 @@ namespace stegoLearning.WinUI.modelos
     public class ItemByte
     {
         private byte _valorByte { get; set; }
-        public List<ItemBit> ListaBits { get; }
+        public List<ItemBit> ListaBits { get; set; }
         
         public ItemByte(byte valorByte)
         {
@@ -158,12 +159,10 @@ namespace stegoLearning.WinUI.modelos
     public class ItemBit
     {
         public string TextoBit { get; }
-        public int Posicao { get; }
         public Thickness BorderThickness { get; set; }
 
         public ItemBit(char valorBit, int posicao)
         {
-            Posicao = posicao;
             TextoBit = valorBit.ToString();
             BorderThickness = new Thickness(0);
         }

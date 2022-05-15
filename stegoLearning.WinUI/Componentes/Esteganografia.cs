@@ -165,8 +165,7 @@ public static class Esteganografia
         int bitsEscritos = 0;
         for (int i = 0; i < numPixeis; i++)
         {
-            //ignorar componente alpha
-            for (int j = 0; j < 3 && bitsEscritos < totalBits; j++)
+            for (int j = 0; j < pixeis[i].Length && bitsEscritos < totalBits; j++)
             {
                 //converter componente atual (byte) numa sequencia de bits
                 BitArray bitsComponente = SequenciaBinaria.BytesParaSequenciaBinaria(pixeis[i][j]);
@@ -206,7 +205,7 @@ public static class Esteganografia
         int bitsLidos = 0;
         for (int i = 0; i < numPixeis; i++)
         {
-            for (int j = 0; j < 3 && bitsLidos < totalBits; j++) //ignorar componente alpha
+            for (int j = 0; j < pixeis[i].Length && bitsLidos < totalBits; j++)
             {
                 //converter componente atual (byte) numa sequencia de bits
                 BitArray bitsComponente = SequenciaBinaria.BytesParaSequenciaBinaria(pixeis[i][j]);
@@ -235,7 +234,7 @@ public static class Esteganografia
     public static int CalcularPixeisUtilizados(int totalBits, int bitsPorComponente)
     {
         double numComponentesAlterados = (double)totalBits / bitsPorComponente;
-        int numPixeisAlterados = (int)Math.Ceiling(numComponentesAlterados / 3); //pixéis alterados parcialmente também contam
+        int numPixeisAlterados = (int)Math.Ceiling(numComponentesAlterados / 4); //pixéis alterados parcialmente também contam
         return numPixeisAlterados;
     }
 

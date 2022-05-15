@@ -22,15 +22,25 @@
         </Grid.ColumnDefinitions>
 
         <!--linha com botões de navegação entre exemplos-->
-        <Button x:Name="exemploAnterior" Grid.Row="0" Grid.Column="0" Content="Exemplo anterior" HorizontalAlignment="Stretch" Click="exemploAnterior_Click"/>
-        <Button x:Name="exemploSeguinte" Grid.Row="0" Grid.Column="1" Content="Exemplo seguinte" HorizontalAlignment="Stretch" Click="exemploSeguinte_Click"/>
+        <Button x:Name="exemploAnterior" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Click="exemploAnterior_Click">
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="Back"/>
+                <TextBlock Text="Exemplo anterior" Margin="10 0 0 0"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="exemploSeguinte" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Click="exemploSeguinte_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Exemplo seguinte" Margin="0 0 10 0"/>
+                <SymbolIcon Symbol="Forward"/>
+            </StackPanel>
+        </Button>
 
         <!--linhas com mensagem e imagens-->
-        <TextBox x:Name="txtMensagem" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Mensagem a esteganografar na imagem:" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="135" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"/>
-        <Border Grid.Row="2" Grid.Column="0" Margin="10" HorizontalAlignment="Left" Background="White">
+        <TextBox x:Name="txtMensagem" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Mensagem esteganografada na imagem:" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="135" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"/>
+        <Border Grid.Row="2" Grid.Column="0" Margin="10" HorizontalAlignment="Right" Background="White">
             <Image x:Name="imgOriginal" Height="200" Source="/imagens/original_1.bmp"/>
         </Border>
-        <Border Grid.Row="2" Grid.Column="1" Margin="10" HorizontalAlignment="Right" Background="White">
+        <Border Grid.Row="2" Grid.Column="1" Margin="10" HorizontalAlignment="Left" Background="White">
             <Image x:Name="imgStego" Height="200" Source="/imagens/stego_1.bmp"/>
         </Border>
 
@@ -38,18 +48,18 @@
         <!--linha com detalhes do processo de esteganografia-->
         <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="40"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
 
-            <Button Grid.Row="0" Grid.Column="1" Content="Próxima letra" Click="Button_Click"/>
-
+            <!--coluna com detalhes dos pixéis original e esteganografado-->
             <Grid Grid.Row="1" Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -61,9 +71,20 @@
                 </Grid.RowDefinitions>
 
                 <!--botões de navegação entre pixéis-->
-                <Button x:Name="pixelAnterior" Grid.Row="0" Content="Pixel anterior" HorizontalAlignment="Stretch" Click="pixelAnterior_Click"/>
-                <Button x:Name="pixelSeguinte" Grid.Row="5" Content="Pixel seguinte" HorizontalAlignment="Stretch" Click="pixelSeguinte_Click"/>
+                <Button x:Name="pixelAnterior" Grid.Row="0" Margin="10" HorizontalAlignment="Stretch" Click="pixelAnterior_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Back"/>
+                        <TextBlock Text="Pixel anterior" Margin="10 0 0 0"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="pixelSeguinte" Grid.Row="5" Margin="10" HorizontalAlignment="Stretch" Click="pixelSeguinte_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Pixel seguinte" Margin="0 0 10 0"/>
+                        <SymbolIcon Symbol="Forward"/>
+                    </StackPanel>
+                </Button>
 
+                <!--cabeçalho da tabela-->
                 <TextBlock Grid.Row="1" Text="Pixéis da Imagem" FontWeight="SemiBold" HorizontalAlignment="Center"/>
 
                 <Grid Grid.Row="2">
@@ -75,12 +96,14 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!--cabeçalho da tabela-->
                     <TextBlock Grid.Column="1" Text="posição" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Text="pixel" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="3" Text="componentes" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="4" Text="em bits" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
                 </Grid>
 
+                <!--linha com detalhes do pixel original-->
                 <Grid x:Name="gridPixelOriginal" Grid.Row="3">
                     <!--DataContext=_pixelOriginalAtual-->
                     <Grid.ColumnDefinitions>
@@ -94,12 +117,15 @@
                         <TextBlock Text="ANTES" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
 
+                    <!--posição do pixel-->
                     <Border Grid.Column="1" Background="LightGray" Margin="2">
                         <TextBlock Text="{Binding Posicao}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
 
+                    <!--imagem do pixel-->
                     <Image Grid.Column="2" Width="108" Source="{Binding ImagemPixel}" VerticalAlignment="Top" Margin="2"/>
 
+                    <!--decomposição do pixel-->
                     <ItemsControl Grid.Column="3" ItemsSource="{Binding ListaComponentes}" VerticalAlignment="Top">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="m:ItemComponente">
@@ -110,14 +136,15 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
 
+                                    <!--nome e valor do componente-->
                                     <Border x:Name="borderComponenteOriginal" Grid.Column="0" Background="{Binding CorComponente}" Margin="2">
                                         <TextBlock Text="{Binding NomeComponente}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-
                                     <Border Grid.Column="1" Background="{Binding CorComponente}" Margin="2">
                                         <TextBlock Text="{Binding ByteComponente}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
 
+                                    <!--bits do componente-->
                                     <ItemsControl Grid.Column="2" ItemsSource="{Binding ByteComponente.ListaBits}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -126,7 +153,7 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="m:ItemBit">
-                                                <Border Background="{Binding ElementName=borderComponenteOriginal, Path=Background}" BorderThickness="{Binding BorderThickness}" Margin="2" Width="16" BorderBrush="Black">
+                                                <Border Background="{Binding ElementName=borderComponenteOriginal, Path=Background}" BorderThickness="{Binding BorderThickness}" Margin="2" Width="16" BorderBrush="LimeGreen">
                                                     <TextBlock Text="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
                                             </DataTemplate>
@@ -140,6 +167,7 @@
 
                 </Grid>
 
+                <!--linha com detalhes do pixel esteganografado-->
                 <Grid x:Name="gridPixelStego" Grid.Row="4">
                     <!--DataContext=_pixelStegoAtual-->
                     <Grid.ColumnDefinitions>
@@ -153,12 +181,15 @@
                         <TextBlock Text="DEPOIS" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
 
+                    <!--posição do pixel-->
                     <Border Grid.Column="1" Background="LightGray" Margin="2">
                         <TextBlock Text="{Binding Posicao}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
 
+                    <!--imagem do pixel-->
                     <Image Grid.Column="2" Width="108" Source="{Binding ImagemPixel}" VerticalAlignment="Top" Margin="2"/>
 
+                    <!--decomposição do pixel-->
                     <ItemsControl Grid.Column="3" ItemsSource="{Binding ListaComponentes}" VerticalAlignment="Top">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="m:ItemComponente">
@@ -169,14 +200,15 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
 
+                                    <!--nome e valor do componente-->
                                     <Border x:Name="borderComponenteStego" Grid.Column="0" Background="{Binding CorComponente}" Margin="2">
                                         <TextBlock Text="{Binding NomeComponente}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-
                                     <Border Grid.Column="1" Background="{Binding CorComponente}" Margin="2">
                                         <TextBlock Text="{Binding ByteComponente}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
 
+                                    <!--bits do componente-->
                                     <ItemsControl Grid.Column="2" ItemsSource="{Binding ByteComponente.ListaBits}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -196,51 +228,59 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-
                 </Grid>
-
-
-
             </Grid>
 
-            <Grid x:Name="gridLetra" Grid.Row="1" Grid.Column="1">
+            <!--coluna com detalhes da letra-->
+            <Grid x:Name="gridLetra" Grid.Row="1" Grid.Column="2">
                 <!--DataContext=_letraAtual-->
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="160"/>
                     <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock FontWeight="SemiBold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="Letras da mensagem" HorizontalAlignment="Center"/>
+                <!--cabeçalho da tabela-->
+                <TextBlock FontWeight="SemiBold" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Text="Letras da mensagem" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="em bits" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="em bytes" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="letra" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="posição" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="em bits" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="em bytes" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="letra" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="3" Text="posição" FontWeight="ExtraLight" HorizontalAlignment="Center"/>
-
-                <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding ListaBytes}">
+                <ItemsControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding ListaBytes}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="m:ItemByte">
-                            <Grid Margin="0 0 2 2">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition/>
                                     <ColumnDefinition Width="80"/>
                                 </Grid.ColumnDefinitions>
+                                
+                                <!--caractere em bits-->
                                 <ItemsControl Grid.Column="0" ItemsSource="{Binding ListaBits}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="m:ItemBit">
-                                            <Border Background="LightGray" Margin="2">
+                                            <Border Background="LightGray" BorderThickness="{Binding BorderThickness}" Margin="2" Width="16" BorderBrush="Red">
                                                 <TextBlock Text="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                
+                                <!--caractere em byte-->
                                 <Border Grid.Column="1" Background="LightGray" Margin="2">
                                     <TextBlock Text="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
@@ -249,223 +289,25 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Border Grid.Row="2" Grid.Column="2" Background="LightGray" Margin="2">
+                <!--caractere-->
+                <Border Grid.Row="3" Grid.Column="2" Background="LightGray" Margin="2">
                     <TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Border>
 
-                <Border Grid.Row="2" Grid.Column="3" Background="LightGray" Margin="2">
+                <!--posição-->
+                <Border Grid.Row="3" Grid.Column="3" Background="LightGray" Margin="2">
                     <TextBlock Text="{Binding Posicao}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Border>
+
+                <StackPanel Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right">
+                    <SymbolIcon Symbol="Back"/>
+                </StackPanel>
+                
             </Grid>
         </Grid>
 
         <!--linha com rodapé para erros e validações-->
         <TextBlock Grid.Row="4" Grid.ColumnSpan="3" x:Name="txtErros" Foreground="Red" Margin="10" VerticalAlignment="Bottom"/>
-
     </Grid>
-    
-
-
-        <!--<Border Grid.Row="0" Grid.Column="0" Width="80" Height="80" Background="Beige">
-            <Image/>
-        </Border>
-        <Border Grid.Row="0" Grid.Column="1" Width="80" Height="80" Background="Beige">
-            <Image/>
-        </Border>
-
-        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="Esteganografar"/>
-
-        <Grid Grid.Row="2" Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Row="0" Width="30" Height="30" Background="Black">
-                <Image HorizontalAlignment="Center"/>
-            </Border>
-
-            <TextBlock Grid.Row="1" Text="#6A875F" HorizontalAlignment="Center"/>
-
-            -->
-        <!--tabela com dados de 1 pixel-->
-        <!--
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                -->
-        <!--row with bgr-->
-        <!--
-                <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="CornflowerBlue" Padding="2">
-                    <TextBlock Text="B" HorizontalAlignment="Center"/>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Background="PaleVioletRed" Padding="2">
-                    <TextBlock Text="G" HorizontalAlignment="Center"/>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Background="LightGreen" Padding="2">
-                    <TextBlock Text="R" HorizontalAlignment="Center"/>
-                </Border>
-
-                -->
-        <!--row with numeric values-->
-        <!--
-                <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Padding="2">
-                    <TextBlock Text="129" HorizontalAlignment="Center"/>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Padding="2">
-                    <TextBlock Text="1" HorizontalAlignment="Center"/>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Padding="2">
-                    <TextBlock Text="64" HorizontalAlignment="Center"/>
-                </Border>
-
-                
-                -->
-        <!--row with bits-->
-        <!--column with b bits-->
-        <!--
-                <Grid Grid.Row="2" Grid.Column="0" Padding="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                    </Grid.RowDefinitions>
-
-                    <Border Grid.Row="0" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Background="LightGray" Height="20">
-                        <TextBlock Text="1" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="2" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="3" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="4" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="5" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="6" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="7" Background="LightGray" Height="20">
-                        <TextBlock Text="1" HorizontalAlignment="Center" Foreground="Red"/>
-                    </Border>
-                </Grid>
-                -->
-        <!--column with g bits-->
-        <!--
-                <Grid Grid.Row="2" Grid.Column="1" Padding="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                    </Grid.RowDefinitions>
-
-                    <Border Grid.Row="0" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="2" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="3" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="4" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="5" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="6" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="7" Background="LightGray" Height="20">
-                        <TextBlock Text="1" HorizontalAlignment="Center" Foreground="Red"/>
-                    </Border>
-                </Grid>
-                -->
-        <!--column with r bits-->
-        <!--
-                <Grid Grid.Row="2" Grid.Column="2" Padding="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                        <RowDefinition Height="22"/>
-                    </Grid.RowDefinitions>
-
-                    <Border Grid.Row="0" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="2" Background="LightGray" Height="20">
-                        <TextBlock Text="1" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="3" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="4" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="5" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="6" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="7" Background="LightGray" Height="20">
-                        <TextBlock Text="0" HorizontalAlignment="Center" Foreground="Red"/>
-                    </Border>
-                </Grid>
-
-            </Grid>
-
-            <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Text="a" TextAlignment="Center"/>
-
-        </Grid>-->
 
 </Page>
